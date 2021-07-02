@@ -43,7 +43,7 @@ int writeContent(char ** output) {
   return 1;
 }
 
-void parse(TidyNode node, char ** output) {
+void parseNode(TidyNode node, char ** output) {
   TidyNode child;
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr hrefAttr = tidyAttrGetById(child, TidyAttr_HREF);
@@ -60,7 +60,7 @@ void parse(TidyNode node, char ** output) {
       if (tidyAttrValue(hrefAttr)) printf("Url found: %s\n", tidyAttrValue(hrefAttr));
     }
 
-    parse(child, output);
+    parseNode(child, output);
   }
 }
 
@@ -95,7 +95,7 @@ int getContent(Crawler crawler) {
         for (int i = 0; i < MAX_LINKS; i ++) {
           crawler.parsedUrls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
-        parse(tidyGetBody(parseDoc), crawler.parsedUrls); // parse results
+        parseNode(tidyGetBody(parseDoc), crawler.parsedUrls); // parse results
         crawler.parsedUrls = crawler.parsedUrls;
       } else {
         printf("crawl failed for %s\n", crawler.url);

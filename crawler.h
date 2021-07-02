@@ -26,4 +26,4 @@ int getContent(Crawler crawler);
 
 // return an array of links
 // take page content in HTML
-void parse(TidyNode node, char ** output);
+void parseNode(TidyNode node, char ** output);

@@ -64,7 +64,7 @@ void parseNode(TidyNode node, char ** output) {
   }
 }
 
-int getContent(Crawler crawler) {
+int getCoursePages(Crawler crawler) {
   if (crawler.url) {
     CURL *handle;
     handle = curl_easy_init();

@@ -15,7 +15,7 @@ clean:
 	/bin/rm -f main *.o *.gz && rm -rf ./output/course_pages.txt
 
 run:
-	./main http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name
+	./main
 
 debug:
 	gdb ./main

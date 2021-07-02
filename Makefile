@@ -12,7 +12,7 @@ main.o: main.c
 	$(CC) $(CFLAGS) main.c
 
 clean:
-	/bin/rm -f main *.o *.gz && rm -rf ./output/out.txt
+	/bin/rm -f main *.o *.gz && rm -rf ./output/course_pages.txt
 
 run:
 	./main http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name

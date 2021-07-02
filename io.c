@@ -4,7 +4,7 @@
  */
 #include <stdio.h>
 
-#define OUTPUT_PATH "output/out.txt"
+#define OUTPUT_PATH "output/course_pages.txt"
 
 // openFileAndWrite opens a file based on a path string passed in
 // and writes the url which has a match to the search term to the

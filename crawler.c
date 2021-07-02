@@ -88,7 +88,7 @@ int getCoursePages(Crawler crawler) {
       res = curl_easy_perform(handle); // execute request, return status code to res
 
       if (res == CURLE_OK) {
-        printf("successful crawl of %s\n", crawler.url);
+        printf("Parsed all course pages from: %s\n", crawler.url);
 
         tidyParseBuffer(parseDoc, &tidyBuffer);
 
@@ -98,7 +98,7 @@ int getCoursePages(Crawler crawler) {
         parseNode(tidyGetBody(parseDoc), crawler.parsedUrls); // parse results
         crawler.parsedUrls = crawler.parsedUrls;
       } else {
-        printf("crawl failed for %s\n", crawler.url);
+        printf("Failed to parse course pages from: %s\n", crawler.url);
         return 0; // failure
       }
 

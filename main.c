@@ -7,7 +7,6 @@
 int main( int argc, char ** argv ) {
   printf("Started...\n");
   Crawler crawler = {
-    "",
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",
     (char **) malloc(MAX_LINKS * (sizeof(char *)))
   };

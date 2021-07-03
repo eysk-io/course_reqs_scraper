@@ -64,7 +64,7 @@ void parseNode(TidyNode node, char ** output) {
   }
 }
 
-int getCoursePages(Crawler crawler) {
+int getAllUrlsOnPage(Crawler crawler) {
   if (crawler.url) {
     CURL *handle;
     handle = curl_easy_init();
@@ -113,5 +113,12 @@ int getCoursePages(Crawler crawler) {
 
   }
   return 0; // failure
+}
 
+int getCoursePages(Crawler crawler) {
+  int result = 0;
+  if (getAllUrlsOnPage(crawler)) {
+    result = writeContent(crawler.parsedUrls);
+  }
+  return result;
 }

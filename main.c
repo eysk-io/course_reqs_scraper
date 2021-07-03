@@ -11,5 +11,4 @@ int main( int argc, char ** argv ) {
     (char **) malloc(MAX_LINKS * (sizeof(char *)))
   };
   getCoursePages(crawler);
-  writeContent(crawler.parsedUrls);
 }

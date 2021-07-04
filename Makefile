@@ -12,7 +12,7 @@ main.o: main.c
 	$(CC) $(CFLAGS) main.c
 
 clean:
-	/bin/rm -f main *.o *.gz && rm -rf ./output/course_pages.txt
+	/bin/rm -f main *.o *.gz
 
 run:
 	./main

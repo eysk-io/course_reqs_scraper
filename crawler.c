@@ -9,7 +9,7 @@
 #define MAX_LINKS 1000
 #define MAX_URL_LEN 512
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="
-int currentIndex = 0;
+int current_index = 0;
 
 size_t bufferCallback(
   char * buffer,
@@ -21,50 +21,26 @@ size_t bufferCallback(
     return newSize;
 };
 
-int writeContent(char ** output) {
-  char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
-  for (int i = 1; i < currentIndex; i++) {
-    if (
-      output[i] &&
-      !strcmp(output[i - 1], output[i]) 
-    ) {
-      if ((strlen(url_first_part) + strlen(output[i]) - 1) > MAX_URL_LEN) {
-        printf("max url length exceeded for %s%s", url_first_part, output[i]);
-        return 0;
-      }
-      char *newOutput = malloc (strlen(url_first_part) + strlen(output[i]) + 1);
-      strcpy(newOutput, url_first_part);
-      strcat(newOutput, output[i]);
-      printf("writing %d: %s\n", i, newOutput);
-      openFileAndWrite(OUTPUT_PATH, newOutput);
-      free(newOutput);
-    }
-  }
-  return 1;
-}
-
 void parseNode(TidyNode node, char ** output) {
   TidyNode child;
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr hrefAttr = tidyAttrGetById(child, TidyAttr_HREF);
     if (hrefAttr) {
-      if (currentIndex < MAX_LINKS) {
+      if (current_index < MAX_LINKS) {
         if (
           strlen(tidyAttrValue(hrefAttr)) < MAX_URL_LEN &&
           strstr(tidyAttrValue(hrefAttr), COURSE_CODE_LINK)
         ) {
-          strcpy(output[currentIndex], tidyAttrValue(hrefAttr));
-          currentIndex++;
+          strcpy(output[current_index], tidyAttrValue(hrefAttr));
+          current_index++;
         }
       }
-      if (tidyAttrValue(hrefAttr)) printf("Url found: %s\n", tidyAttrValue(hrefAttr));
     }
-
     parseNode(child, output);
   }
 }
 
-int getAllUrlsOnPage(Crawler crawler) {
+int get_all_urls_on_page(Crawler crawler) {
   if (crawler.url) {
     CURL *handle;
     handle = curl_easy_init();
@@ -115,10 +91,24 @@ int getAllUrlsOnPage(Crawler crawler) {
   return 0; // failure
 }
 
-int getCoursePages(Crawler crawler) {
-  int result = 0;
-  if (getAllUrlsOnPage(crawler)) {
-    result = writeContent(crawler.parsedUrls);
+void get_course_page_urls(Crawler crawler, int *num_urls) {
+  if (get_all_urls_on_page(crawler)) {
+    char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
+    for (int i = 1; i < current_index; i++) {
+      if (
+        crawler.parsedUrls[i] &&
+        !strcmp(crawler.parsedUrls[i - 1], crawler.parsedUrls[i]) 
+      ) {
+        if ((strlen(url_first_part) + strlen(crawler.parsedUrls[i]) - 1) > MAX_URL_LEN) {
+          printf("max url length exceeded for %s%s", url_first_part, crawler.parsedUrls[i]);
+          return;
+        }
+        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(crawler.parsedUrls[i]) + 1);
+        strcpy(course_page, url_first_part);
+        strcat(course_page, crawler.parsedUrls[i]);
+        strcpy(crawler.parsedUrls[i], course_page);
+        (*num_urls)++;
+      }
+    }
   }
-  return result;
 }

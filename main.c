@@ -4,6 +4,8 @@
 #include <curl/curl.h>
 #include "crawler.c"
 
+char** subject_page_urls;
+
 int main( int argc, char ** argv ) {
   printf("Started...\n");
   Crawler crawler = {
@@ -15,8 +17,15 @@ int main( int argc, char ** argv ) {
   get_course_page_urls(crawler, &num_urls);
 
   int num_course_codes = 0;
+  subject_page_urls = malloc(num_urls * sizeof(char*));
   for (int i = 1; i < (num_urls * 2); i+=2) {
+    subject_page_urls[num_course_codes] = crawler.parsedUrls[i];
     num_course_codes++;
-    printf("course %d: %s\n", num_course_codes, crawler.parsedUrls[i]);
   }
+
+  for (int i = 0; i < num_urls; i++) {
+    printf("course %d: %s\n", i + 1, subject_page_urls[i]);
+  }
+
+  free(subject_page_urls);
 }

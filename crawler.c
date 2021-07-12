@@ -11,32 +11,32 @@
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="
 int current_index = 0;
 
-size_t bufferCallback(
+size_t buffer_callback(
   char * buffer,
   size_t size,
-  size_t nmemb,
-  TidyBuffer * tidyBuffer) {
-    size_t newSize = size * nmemb;
-    tidyBufAppend(tidyBuffer, buffer, newSize);
-    return newSize;
+  size_t num_members,
+  TidyBuffer * tidy_buffer) {
+    size_t new_size = size * num_members;
+    tidyBufAppend(tidy_buffer, buffer, new_size);
+    return new_size;
 };
 
-void parseNode(TidyNode node, char ** output) {
+void parse_node(TidyNode node, char ** output) {
   TidyNode child;
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
-    TidyAttr hrefAttr = tidyAttrGetById(child, TidyAttr_HREF);
-    if (hrefAttr) {
+    TidyAttr href_attr = tidyAttrGetById(child, TidyAttr_HREF);
+    if (href_attr) {
       if (current_index < MAX_LINKS) {
         if (
-          strlen(tidyAttrValue(hrefAttr)) < MAX_URL_LEN &&
-          strstr(tidyAttrValue(hrefAttr), COURSE_CODE_LINK)
+          strlen(tidyAttrValue(href_attr)) < MAX_URL_LEN &&
+          strstr(tidyAttrValue(href_attr), COURSE_CODE_LINK)
         ) {
-          strcpy(output[current_index], tidyAttrValue(hrefAttr));
+          strcpy(output[current_index], tidyAttrValue(href_attr));
           current_index++;
         }
       }
     }
-    parseNode(child, output);
+    parse_node(child, output);
   }
 }
 
@@ -44,51 +44,49 @@ int get_all_urls_on_page(Crawler crawler) {
   if (crawler.url) {
     CURL *handle;
     handle = curl_easy_init();
-    char errBuff[CURL_ERROR_SIZE];
+    char err_buff[CURL_ERROR_SIZE];
     int res;
-    TidyDoc parseDoc;
-    TidyBuffer tidyBuffer = {0};
+    TidyDoc parse_doc;
+    TidyBuffer tidy_buffer = {0};
 
     if (handle) {
       curl_easy_setopt(handle, CURLOPT_URL, crawler.url); // set URL
-      curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, bufferCallback); // set output callback function
-      curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errBuff);
+      curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, buffer_callback); // set output callback function
+      curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err_buff);
 
-      parseDoc = tidyCreate();
-      tidyBufInit(&tidyBuffer);
-      tidyOptSetInt(parseDoc, TidyWrapLen, 2048); // set max length
-      tidyOptSetBool(parseDoc, TidyForceOutput, yes); // force output
+      parse_doc = tidyCreate();
+      tidyBufInit(&tidy_buffer);
+      tidyOptSetInt(parse_doc, TidyWrapLen, 2048); // set max length
+      tidyOptSetBool(parse_doc, TidyForceOutput, yes); // force output
 
-      curl_easy_setopt(handle, CURLOPT_WRITEDATA, &tidyBuffer); // identify buffer to store data in
+      curl_easy_setopt(handle, CURLOPT_WRITEDATA, &tidy_buffer); // identify buffer to store data in
 
       res = curl_easy_perform(handle); // execute request, return status code to res
 
       if (res == CURLE_OK) {
         printf("Parsed all course pages from: %s\n", crawler.url);
 
-        tidyParseBuffer(parseDoc, &tidyBuffer);
+        tidyParseBuffer(parse_doc, &tidy_buffer);
 
         for (int i = 0; i < MAX_LINKS; i ++) {
-          crawler.parsedUrls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
+          crawler.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
-        parseNode(tidyGetBody(parseDoc), crawler.parsedUrls); // parse results
-        crawler.parsedUrls = crawler.parsedUrls;
+        parse_node(tidyGetBody(parse_doc), crawler.parsed_urls); // parse results
+        crawler.parsed_urls = crawler.parsed_urls;
       } else {
         printf("Failed to parse course pages from: %s\n", crawler.url);
-        return 0; // failure
+        return 0;
       }
 
       curl_easy_cleanup(handle);
-      tidyBufFree(&tidyBuffer);
-      tidyRelease(parseDoc);
+      tidyBufFree(&tidy_buffer);
+      tidyRelease(parse_doc);
 
-      return 1; // success
-
+      return 1;
     }
-    return 0; // failure
-
+    return 0;
   }
-  return 0; // failure
+  return 0;
 }
 
 void get_course_page_urls(Crawler crawler, int *num_urls) {
@@ -96,17 +94,17 @@ void get_course_page_urls(Crawler crawler, int *num_urls) {
     char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
     for (int i = 1; i < current_index; i++) {
       if (
-        crawler.parsedUrls[i] &&
-        !strcmp(crawler.parsedUrls[i - 1], crawler.parsedUrls[i]) 
+        crawler.parsed_urls[i] &&
+        !strcmp(crawler.parsed_urls[i - 1], crawler.parsed_urls[i]) 
       ) {
-        if ((strlen(url_first_part) + strlen(crawler.parsedUrls[i]) - 1) > MAX_URL_LEN) {
-          printf("max url length exceeded for %s%s", url_first_part, crawler.parsedUrls[i]);
+        if ((strlen(url_first_part) + strlen(crawler.parsed_urls[i]) - 1) > MAX_URL_LEN) {
+          printf("max url length exceeded for %s%s", url_first_part, crawler.parsed_urls[i]);
           return;
         }
-        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(crawler.parsedUrls[i]) + 1);
+        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(crawler.parsed_urls[i]) + 1);
         strcpy(course_page, url_first_part);
-        strcat(course_page, crawler.parsedUrls[i]);
-        strcpy(crawler.parsedUrls[i], course_page);
+        strcat(course_page, crawler.parsed_urls[i]);
+        strcpy(crawler.parsed_urls[i], course_page);
         (*num_urls)++;
       }
     }

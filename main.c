@@ -19,7 +19,7 @@ int main( int argc, char ** argv ) {
   int num_course_codes = 0;
   subject_page_urls = malloc(num_urls * sizeof(char*));
   for (int i = 1; i < (num_urls * 2); i+=2) {
-    subject_page_urls[num_course_codes] = crawler.parsedUrls[i];
+    subject_page_urls[num_course_codes] = crawler.parsed_urls[i];
     num_course_codes++;
   }
 

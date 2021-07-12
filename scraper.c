@@ -20,7 +20,7 @@ size_t buffer_callback(
     return new_size;
 };
 
-void parse_node(TidyNode node, char ** output) {
+void parse_node_for_href(TidyNode node, char ** output) {
   TidyNode child;
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr href_attr = tidyAttrGetById(child, TidyAttr_HREF);
@@ -35,7 +35,7 @@ void parse_node(TidyNode node, char ** output) {
         }
       }
     }
-    parse_node(child, output);
+    parse_node_for_href(child, output);
   }
 }
 
@@ -70,7 +70,7 @@ int get_all_urls_on_page(Scraper scraper) {
         for (int i = 0; i < MAX_LINKS; i ++) {
           scraper.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
-        parse_node(tidyGetBody(parse_doc), scraper.parsed_urls); // parse results
+        parse_node_for_href(tidyGetBody(parse_doc), scraper.parsed_urls); // parse results
         scraper.parsed_urls = scraper.parsed_urls;
       } else {
         printf("Failed to parse course pages from: %s\n", scraper.url);

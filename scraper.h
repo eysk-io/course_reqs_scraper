@@ -9,7 +9,7 @@ typedef struct ScraperTag {
   char ** parsed_urls;
 } Scraper;
 
-void parse_node(TidyNode node, char ** output);
+void parse_node_for_href(TidyNode node, char ** output);
 
 int get_all_urls_on_page(Scraper scraper);
 

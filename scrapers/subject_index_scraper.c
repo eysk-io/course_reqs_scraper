@@ -8,7 +8,7 @@
 #define MAX_LINKS 1000
 #define MAX_URL_LEN 512
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="
-int current_index = 0;
+int current_subject_index = 0;
 
 size_t buffer_callback(
   char * buffer,
@@ -25,13 +25,13 @@ void parse_node_for_href(TidyNode node, char ** output) {
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr href_attr = tidyAttrGetById(child, TidyAttr_HREF);
     if (href_attr) {
-      if (current_index < MAX_LINKS) {
+      if (current_subject_index < MAX_LINKS) {
         if (
           strlen(tidyAttrValue(href_attr)) < MAX_URL_LEN &&
           strstr(tidyAttrValue(href_attr), COURSE_CODE_LINK)
         ) {
-          strcpy(output[current_index], tidyAttrValue(href_attr));
-          current_index++;
+          strcpy(output[current_subject_index], tidyAttrValue(href_attr));
+          current_subject_index++;
         }
       }
     }
@@ -91,7 +91,7 @@ int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
 void get_course_page_urls(SubjectIndexScraper subject_index_scraper, int *num_urls) {
   if (get_all_urls_on_page(subject_index_scraper)) {
     char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
-    for (int i = 1; i < current_index; i++) {
+    for (int i = 1; i < current_subject_index; i++) {
       if (
         subject_index_scraper.parsed_urls[i] &&
         !strcmp(subject_index_scraper.parsed_urls[i - 1], subject_index_scraper.parsed_urls[i]) 

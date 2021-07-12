@@ -10,7 +10,7 @@
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="
 int current_subject_index = 0;
 
-size_t buffer_callback(
+size_t subject_index_buffer_callback(
   char * buffer,
   size_t size,
   size_t num_members,
@@ -50,7 +50,7 @@ int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
 
     if (handle) {
       curl_easy_setopt(handle, CURLOPT_URL, subject_index_scraper.url); // set URL
-      curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, buffer_callback); // set output callback function
+      curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, subject_index_buffer_callback); // set output callback function
       curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err_buff);
 
       parse_doc = tidyCreate();

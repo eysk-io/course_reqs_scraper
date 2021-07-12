@@ -7,10 +7,10 @@
 typedef struct ScraperTag {
   char * url;
   char ** parsed_urls;
-} Scraper;
+} SubjectIndexScraper;
 
 void parse_node_for_href(TidyNode node, char ** output);
 
-int get_all_urls_on_page(Scraper scraper);
+int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper);
 
-void get_course_page_urls(Scraper scraper, int *num_urls);
+void get_course_page_urls(SubjectIndexScraper subject_index_scraper, int *num_urls);

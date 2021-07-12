@@ -4,7 +4,6 @@
 #include <tidy.h>
 #include <tidybuffio.h>
 #include "scraper.h"
-#include "io.c"
 
 #define MAX_LINKS 1000
 #define MAX_URL_LEN 512

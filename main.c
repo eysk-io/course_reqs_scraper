@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 #include "scrapers/subject_index_scraper.c"
+#include "scrapers/course_subject_scraper.c"
 
 char** subject_page_urls;
 
@@ -26,6 +27,12 @@ int main( int argc, char ** argv ) {
   for (int i = 0; i < num_urls; i++) {
     printf("course %d: %s\n", i + 1, subject_page_urls[i]); 
   }
+
+  // TODO: Change this to get courses from each url
+  CourseSubjectScraper course_subject_scraper;
+  course_subject_scraper.url = subject_page_urls[0];
+  int num_courses = 0;
+  get_courses(course_subject_scraper, &num_courses);
 
   free(subject_page_urls);
 }

@@ -18,7 +18,7 @@ size_t course_subject_buffer_callback(
     return new_size;
 };
 
-void parse_node_for_dt(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode node, struct Course* courses) {
+void parse_node_for_descriptions(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode node, struct Course* courses) {
     TidyNode child;
     for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
         if (
@@ -27,7 +27,7 @@ void parse_node_for_dt(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode node, stru
         ) {
             tidyNodeGetText(doc, child, tidy_buffer);
         }
-        parse_node_for_dt(doc, tidy_buffer, child, courses);
+        parse_node_for_descriptions(doc, tidy_buffer, child, courses);
     }
 }
 
@@ -61,7 +61,7 @@ void get_courses(CourseSubjectScraper course_subject_scraper, int *num_courses) 
             course_subject_scraper.courses = malloc(sizeof(struct Courses*));
 
             tidyBufInit(&description_tidy_buffer);
-            parse_node_for_dt(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
+            parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
             printf("%s\n", description_tidy_buffer.bp);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);

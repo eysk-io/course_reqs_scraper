@@ -30,7 +30,7 @@ int main( int argc, char ** argv ) {
 
   // TODO: Change this to get courses from each url
   CourseSubjectScraper course_subject_scraper;
-  course_subject_scraper.url = subject_page_urls[0];
+  course_subject_scraper.url = subject_page_urls[73];
   int num_courses = 0;
   get_courses(course_subject_scraper, &num_courses);
 

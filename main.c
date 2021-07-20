@@ -24,12 +24,14 @@ int main( int argc, char ** argv ) {
     num_course_codes++;
   }
 
+  int num_courses = 0;
   for (int i = 0; i < num_urls; i++) {
-    printf("course code number %d: %s\n", i + 1, subject_page_urls[i]); 
+    printf("code number %d: %s\n", i + 1, subject_page_urls[i]); 
     CourseSubjectScraper course_subject_scraper;
     course_subject_scraper.url = subject_page_urls[i];
-    get_courses(course_subject_scraper);
+    get_courses(course_subject_scraper, &num_courses);
   }
+  printf("num_courses: %d\n", num_courses);
 
   free(subject_page_urls);
 }

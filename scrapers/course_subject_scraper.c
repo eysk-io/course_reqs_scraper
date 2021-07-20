@@ -54,9 +54,10 @@ char *trim_white_space(char *str) {
     return str;
 }
 
-void get_each_course(TidyBuffer* tidy_buffer) {
+void get_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
     char* tail = (char*) tidy_buffer->bp;
     while(strstr(tail, "</dd>")) {
+        *num_courses = *num_courses + 1;
         char* all_courses = tail;
         char* course_subject = split(all_courses, "</a>");
 
@@ -85,7 +86,7 @@ void get_each_course(TidyBuffer* tidy_buffer) {
     }
 }
 
-void get_courses(CourseSubjectScraper course_subject_scraper) {
+void get_courses(CourseSubjectScraper course_subject_scraper, int* num_courses) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -117,7 +118,7 @@ void get_courses(CourseSubjectScraper course_subject_scraper) {
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
 
-            get_each_course(&description_tidy_buffer);
+            get_each_course(&description_tidy_buffer, num_courses);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
             return;

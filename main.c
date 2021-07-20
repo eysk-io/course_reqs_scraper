@@ -25,14 +25,11 @@ int main( int argc, char ** argv ) {
   }
 
   for (int i = 0; i < num_urls; i++) {
-    printf("course %d: %s\n", i + 1, subject_page_urls[i]); 
+    printf("course code number %d: %s\n", i + 1, subject_page_urls[i]); 
+    CourseSubjectScraper course_subject_scraper;
+    course_subject_scraper.url = subject_page_urls[i];
+    get_courses(course_subject_scraper);
   }
-
-  // TODO: Change this to get courses from each url
-  CourseSubjectScraper course_subject_scraper;
-  course_subject_scraper.url = subject_page_urls[73];
-  int num_courses = 0;
-  get_courses(course_subject_scraper, &num_courses);
 
   free(subject_page_urls);
 }

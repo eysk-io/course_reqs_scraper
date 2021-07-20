@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <curl/curl.h>
 #include <tidy.h>
@@ -31,7 +33,59 @@ void parse_node_for_descriptions(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode 
     }
 }
 
-void get_courses(CourseSubjectScraper course_subject_scraper, int *num_courses) {
+char *split(char *str, const char *delim) {
+    char *p = strstr(str, delim);
+    if (p == NULL) return NULL;
+    *p = '\0';
+    return p + strlen(delim);
+}
+
+char *trim_white_space(char *str) {
+    char *end;
+    while (isspace((unsigned char) *str)) {
+        str++;
+    }
+    if (*str == 0) return str;
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char) *end)) {
+        end--;
+    }
+    end[1] = '\0';
+    return str;
+}
+
+void get_each_course(TidyBuffer* tidy_buffer) {
+    char* tail = (char*) tidy_buffer->bp;
+    while(strstr(tail, "</dd>")) {
+        char* all_courses = tail;
+        char* course_subject = split(all_courses, "</a>");
+
+        char* course_code_str = split(course_subject, " ");
+        int course_code = atoi(course_code_str);
+
+        char* course_num_credits_str = split(course_code_str, " (");
+
+        char* course_title = split(course_num_credits_str, ")");
+        course_title = split(course_title, "<b>");
+
+        char* course_description = split(course_title, "</b></dt>");
+
+        course_description = trim_white_space(course_description);
+        course_description = split(course_description, "<dd>");
+
+        tail = split(course_description, "</dd>");
+        tail = trim_white_space(tail);
+
+        printf("course_subject: %s\n", course_subject);
+        printf("course_code: %d\n", course_code);
+        printf("course_num_credits: %s\n", course_num_credits_str);
+        printf("course_title: %s\n", course_title);
+        printf("course_description: %s\n", course_description);
+        printf("\n");
+    }
+}
+
+void get_courses(CourseSubjectScraper course_subject_scraper) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -62,7 +116,8 @@ void get_courses(CourseSubjectScraper course_subject_scraper, int *num_courses) 
 
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
-            printf("%s\n", description_tidy_buffer.bp);
+
+            get_each_course(&description_tidy_buffer);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
             return;

@@ -31,6 +31,16 @@ int main( int argc, char ** argv ) {
     course_subject_scraper.url = subject_page_urls[i];
     get_courses(course_subject_scraper, &num_courses);
   }
+
+  // Getting courses by individual course codes:
+  // There are 260 course codes
+  // There are 8927 individual courses 
+  // subject_page_urls[73] is CPSC
+
+  // CourseSubjectScraper course_subject_scraper;
+  // course_subject_scraper.url = subject_page_urls[63];
+  // get_courses(course_subject_scraper, &num_courses);
+  
   printf("num_courses: %d\n", num_courses);
 
   free(subject_page_urls);

@@ -9,6 +9,8 @@ typedef struct ScraperTag {
   char ** parsed_urls;
 } SubjectIndexScraper;
 
+size_t subject_index_buffer_callback(char * buffer, size_t size, size_t num_members, TidyBuffer * tidy_buffer);
+
 void parse_node_for_href(TidyNode node, char ** output);
 
 int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper);

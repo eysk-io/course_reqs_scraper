@@ -13,7 +13,7 @@
 
 char* PREREQUISITES_TAG = "<em>Prerequisite:</em>";
 char* COREQUISITES_TAG = "<em>Corequisite:</em>";
-char* EQUIVALENCY_TAG = "<em>Equivalency:</em>";
+char* EQUIVALENCies_TAG = "<em>Equivalencies:</em>";
 
 size_t course_subject_buffer_callback(
   char * buffer,
@@ -59,31 +59,31 @@ char *trim_white_space(char *str) {
     return str;
 }
 
-void get_requisites(char** course_description, char** prerequisites, char** corequisites, char** equivalency) {
+void get_requisites(char** course_description, char** prerequisites, char** corequisites, char** equivalencies) {
     if (strstr(*course_description, PREREQUISITES_TAG)) {
         *prerequisites = split(*course_description, PREREQUISITES_TAG);
         *prerequisites = trim_white_space(*prerequisites);
         if (strstr(*prerequisites, COREQUISITES_TAG)) {
             *corequisites = split(*prerequisites, COREQUISITES_TAG);
             *corequisites = trim_white_space(*corequisites);
-            if (strstr(*corequisites, EQUIVALENCY_TAG)) {
-                *equivalency = split(*corequisites, EQUIVALENCY_TAG);
-                *equivalency = trim_white_space(*equivalency);
+            if (strstr(*corequisites, EQUIVALENCies_TAG)) {
+                *equivalencies = split(*corequisites, EQUIVALENCies_TAG);
+                *equivalencies = trim_white_space(*equivalencies);
             }
-        } else if (strstr(*prerequisites, EQUIVALENCY_TAG)) {
-            *equivalency = split(*prerequisites, EQUIVALENCY_TAG);
-            *equivalency = trim_white_space(*equivalency);
+        } else if (strstr(*prerequisites, EQUIVALENCies_TAG)) {
+            *equivalencies = split(*prerequisites, EQUIVALENCies_TAG);
+            *equivalencies = trim_white_space(*equivalencies);
         }
     } else if (strstr(*course_description, COREQUISITES_TAG)) {
         *corequisites = split(*course_description, COREQUISITES_TAG);
         *corequisites = trim_white_space(*corequisites);
-        if (strstr(*corequisites, EQUIVALENCY_TAG)) {
-            *equivalency = split(*corequisites, EQUIVALENCY_TAG);
-            *equivalency = trim_white_space(*equivalency);
+        if (strstr(*corequisites, EQUIVALENCies_TAG)) {
+            *equivalencies = split(*corequisites, EQUIVALENCies_TAG);
+            *equivalencies = trim_white_space(*equivalencies);
         }
-    } else if (strstr(*course_description, EQUIVALENCY_TAG)) {
-        *equivalency = split(*course_description, EQUIVALENCY_TAG);
-        *equivalency = trim_white_space(*equivalency);
+    } else if (strstr(*course_description, EQUIVALENCies_TAG)) {
+        *equivalencies = split(*course_description, EQUIVALENCies_TAG);
+        *equivalencies = trim_white_space(*equivalencies);
     }
 
     *course_description = trim_white_space(*course_description);
@@ -124,8 +124,8 @@ void get_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
 
         char* prerequisites = '\0';
         char* corequisites = '\0';
-        char* equivalency = '\0';
-        get_requisites(&course_description, &prerequisites, &corequisites, &equivalency);
+        char* equivalencies = '\0';
+        get_requisites(&course_description, &prerequisites, &corequisites, &equivalencies);
 
         printf("course_subject: %s\n", course_subject);
         printf("course_code: %d\n", course_code);
@@ -138,8 +138,8 @@ void get_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
         if (corequisites) {
             printf("corequisites: %s\n", corequisites);
         }
-        if (equivalency) {
-            printf("equivalency: %s\n", equivalency);
+        if (equivalencies) {
+            printf("equivalencies: %s\n", equivalencies);
         }
         printf("\n");
     }

@@ -13,7 +13,7 @@
 
 char* PREREQUISITES_TAG = "<em>Prerequisite:</em>";
 char* COREQUISITES_TAG = "<em>Corequisite:</em>";
-char* EQUIVALENCies_TAG = "<em>Equivalencies:</em>";
+char* EQUIVALENCIES_TAG = "<em>Equivalencies:</em>";
 
 size_t course_subject_buffer_callback(
   char * buffer,
@@ -66,23 +66,23 @@ void get_requisites(char** course_description, char** prerequisites, char** core
         if (strstr(*prerequisites, COREQUISITES_TAG)) {
             *corequisites = split(*prerequisites, COREQUISITES_TAG);
             *corequisites = trim_white_space(*corequisites);
-            if (strstr(*corequisites, EQUIVALENCies_TAG)) {
-                *equivalencies = split(*corequisites, EQUIVALENCies_TAG);
+            if (strstr(*corequisites, EQUIVALENCIES_TAG)) {
+                *equivalencies = split(*corequisites, EQUIVALENCIES_TAG);
                 *equivalencies = trim_white_space(*equivalencies);
             }
-        } else if (strstr(*prerequisites, EQUIVALENCies_TAG)) {
-            *equivalencies = split(*prerequisites, EQUIVALENCies_TAG);
+        } else if (strstr(*prerequisites, EQUIVALENCIES_TAG)) {
+            *equivalencies = split(*prerequisites, EQUIVALENCIES_TAG);
             *equivalencies = trim_white_space(*equivalencies);
         }
     } else if (strstr(*course_description, COREQUISITES_TAG)) {
         *corequisites = split(*course_description, COREQUISITES_TAG);
         *corequisites = trim_white_space(*corequisites);
-        if (strstr(*corequisites, EQUIVALENCies_TAG)) {
-            *equivalencies = split(*corequisites, EQUIVALENCies_TAG);
+        if (strstr(*corequisites, EQUIVALENCIES_TAG)) {
+            *equivalencies = split(*corequisites, EQUIVALENCIES_TAG);
             *equivalencies = trim_white_space(*equivalencies);
         }
-    } else if (strstr(*course_description, EQUIVALENCies_TAG)) {
-        *equivalencies = split(*course_description, EQUIVALENCies_TAG);
+    } else if (strstr(*course_description, EQUIVALENCIES_TAG)) {
+        *equivalencies = split(*course_description, EQUIVALENCIES_TAG);
         *equivalencies = trim_white_space(*equivalencies);
     }
 

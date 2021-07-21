@@ -7,7 +7,7 @@
 
 char** subject_page_urls;
 
-int main( int argc, char ** argv ) {
+int main(int argc, char** argv) {
   printf("Started...\n");
   SubjectIndexScraper subject_index_scraper = {
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",

@@ -34,7 +34,7 @@ int main( int argc, char ** argv ) {
 
   // Getting courses by individual course codes:
   // There are 260 course codes
-  // There are 8927 individual courses 
+  // There are 8958 individual courses 
   // subject_page_urls[73] is CPSC
 
   // CourseSubjectScraper course_subject_scraper;

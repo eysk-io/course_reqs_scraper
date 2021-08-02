@@ -38,6 +38,6 @@ char *trim_white_space(char *str);
 
 void get_requisites(char** course_description, char** prerequisites, char** corequisites, char** equivalency);
 
-void get_each_course(TidyBuffer* tidy_buffer, int* num_courses);
+void get_each_course(TidyBuffer* tidy_buffer, int* num_courses, mongoc_client_t *client, mongoc_collection_t *collection);
 
-void get_courses(CourseSubjectScraper course_subject_scraper, int* num_courses);
+void get_courses(CourseSubjectScraper course_subject_scraper, int* num_courses, mongoc_client_t *client, mongoc_collection_t *collection);

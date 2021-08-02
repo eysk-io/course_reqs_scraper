@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include <tidy.h>
 #include <tidybuffio.h>
+#include <mongoc/mongoc.h>
 #include "course_subject_scraper.h"
 
 #define MAX_LINKS 1000
@@ -99,7 +100,12 @@ void get_requisites(char** course_description, char** prerequisites, char** core
     }
 }
 
-void get_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
+void get_each_course(
+    TidyBuffer* tidy_buffer, 
+    int* num_courses,
+    mongoc_client_t *client,
+    mongoc_collection_t *collection
+) {
     char* tail = (char*) tidy_buffer->bp;
     while(strstr(tail, "</dd>")) {
         *num_courses = *num_courses + 1;
@@ -127,25 +133,49 @@ void get_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
         char* equivalencies = '\0';
         get_requisites(&course_description, &prerequisites, &corequisites, &equivalencies);
 
-        printf("course_subject: %s\n", course_subject);
-        printf("course_code: %d\n", course_code);
-        printf("course_num_credits: %s\n", course_num_credits_str);
-        printf("course_title: %s\n", course_title);
-        printf("course_description: %s\n", course_description);
-        if (prerequisites) {
-            printf("prerequisites: %s\n", prerequisites);
+        bson_t *doc;
+        bson_oid_t oid;
+        bson_error_t error;
+
+        doc = bson_new();
+        bson_oid_init (&oid, NULL);
+        BSON_APPEND_OID(doc, "_id", &oid);
+        BSON_APPEND_UTF8(doc, "subject", course_subject);
+        BSON_APPEND_INT32(doc, "code", course_code);
+        BSON_APPEND_UTF8(doc, "credits", course_num_credits_str);
+        BSON_APPEND_UTF8(doc, "title", course_title);
+        BSON_APPEND_UTF8(doc, "description", course_description);
+        
+        // TODO: add proper school id
+        BSON_APPEND_UTF8(doc, "school", "123ABC");
+
+        prerequisites = prerequisites ? prerequisites : "none";
+        BSON_APPEND_UTF8(doc, "preRequisites", prerequisites);
+
+        corequisites = corequisites ? corequisites : "none";
+        BSON_APPEND_UTF8(doc, "coRequisites", corequisites);
+
+        equivalencies = equivalencies ? equivalencies : "none";
+        BSON_APPEND_UTF8(doc, "equivalencies", equivalencies);
+
+        if (!mongoc_collection_insert_one(
+            collection, doc, NULL, NULL, &error
+        )) {
+            fprintf (stderr, "%s\n", error.message);
         }
-        if (corequisites) {
-            printf("corequisites: %s\n", corequisites);
-        }
-        if (equivalencies) {
-            printf("equivalencies: %s\n", equivalencies);
-        }
-        printf("\n");
+        char *str = bson_as_canonical_extended_json(doc, NULL);
+        printf("%s\n", str);
+        bson_free(str);
+        bson_destroy(doc);
     }
 }
 
-void get_courses(CourseSubjectScraper course_subject_scraper, int* num_courses) {
+void get_courses(
+    CourseSubjectScraper course_subject_scraper, 
+    int* num_courses,
+    mongoc_client_t *client,
+    mongoc_collection_t *collection
+) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -177,7 +207,7 @@ void get_courses(CourseSubjectScraper course_subject_scraper, int* num_courses) 
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
 
-            get_each_course(&description_tidy_buffer, num_courses);
+            get_each_course(&description_tidy_buffer, num_courses, client, collection);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
             return;

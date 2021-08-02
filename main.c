@@ -6,8 +6,6 @@
 #include "scrapers/subject_index_scraper.c"
 #include "scrapers/course_subject_scraper.c"
 
-char** subject_page_urls;
-
 int main(int argc, char** argv) {
   mongoc_init ();
   mongoc_client_t *client = mongoc_client_new("mongodb://localhost:27017/?appname=insert-example");
@@ -22,7 +20,7 @@ int main(int argc, char** argv) {
   get_course_page_urls(subject_index_scraper, &num_urls);
 
   int num_course_codes = 0;
-  subject_page_urls = malloc(num_urls * sizeof(char*));
+  char** subject_page_urls = malloc(num_urls * sizeof(char*));
   for (int i = 1; i < (num_urls * 2); i+=2) {
     subject_page_urls[num_course_codes] = subject_index_scraper.parsed_urls[i];
     num_course_codes++;

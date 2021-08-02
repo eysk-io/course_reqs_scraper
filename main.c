@@ -11,7 +11,7 @@ char** subject_page_urls;
 int main(int argc, char** argv) {
   mongoc_init ();
   mongoc_client_t *client = mongoc_client_new("mongodb://localhost:27017/?appname=insert-example");
-  mongoc_collection_t *collection = mongoc_client_get_collection(client, "courses_test_db", "courses_test_coll");
+  mongoc_collection_t *collection = mongoc_client_get_collection(client, "test_db", "test_coll");
   printf("Started...\n");
   SubjectIndexScraper subject_index_scraper = {
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     printf("code number %d: %s\n", i + 1, subject_page_urls[i]); 
     CourseSubjectScraper course_subject_scraper;
     course_subject_scraper.url = subject_page_urls[i];
-    get_courses(course_subject_scraper, &num_courses, client, collection);
+    update_courses(course_subject_scraper, &num_courses, client, collection);
   }
 
   // Getting courses by individual course codes:
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   // int num_courses = 0;
   // CourseSubjectScraper course_subject_scraper;
   // course_subject_scraper.url = subject_page_urls[63];
-  // get_courses(course_subject_scraper, &num_courses, client, collection);
+  // update_courses(course_subject_scraper, &num_courses, client, collection);
   
   printf("num_courses: %d\n", num_courses);
 

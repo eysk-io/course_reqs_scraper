@@ -100,7 +100,7 @@ void get_requisites(char** course_description, char** prerequisites, char** core
     }
 }
 
-void get_each_course(
+void update_each_course(
     TidyBuffer* tidy_buffer, 
     int* num_courses,
     mongoc_client_t *client,
@@ -132,45 +132,56 @@ void get_each_course(
         char* corequisites = '\0';
         char* equivalencies = '\0';
         get_requisites(&course_description, &prerequisites, &corequisites, &equivalencies);
-
-        bson_t *doc;
-        bson_oid_t oid;
-        bson_error_t error;
-
-        doc = bson_new();
-        bson_oid_init (&oid, NULL);
-        BSON_APPEND_OID(doc, "_id", &oid);
-        BSON_APPEND_UTF8(doc, "subject", course_subject);
-        BSON_APPEND_INT32(doc, "code", course_code);
-        BSON_APPEND_UTF8(doc, "credits", course_num_credits_str);
-        BSON_APPEND_UTF8(doc, "title", course_title);
-        BSON_APPEND_UTF8(doc, "description", course_description);
-        
-        // TODO: add proper school id
-        BSON_APPEND_UTF8(doc, "school", "123ABC");
-
         prerequisites = prerequisites ? prerequisites : "none";
-        BSON_APPEND_UTF8(doc, "preRequisites", prerequisites);
-
         corequisites = corequisites ? corequisites : "none";
-        BSON_APPEND_UTF8(doc, "coRequisites", corequisites);
-
         equivalencies = equivalencies ? equivalencies : "none";
-        BSON_APPEND_UTF8(doc, "equivalencies", equivalencies);
 
-        if (!mongoc_collection_insert_one(
-            collection, doc, NULL, NULL, &error
-        )) {
-            fprintf (stderr, "%s\n", error.message);
+        mongoc_find_and_modify_opts_t *opts;
+        bson_t reply;
+        bson_error_t error;
+        bson_t query = BSON_INITIALIZER;
+        bson_t *update;
+
+        BSON_APPEND_UTF8(&query, "subject", course_subject);
+        BSON_APPEND_INT32(&query, "code", course_code);
+
+        // TODO: add proper school id
+        update = BCON_NEW(
+            "$set",
+            "{", 
+                "credits", BCON_UTF8(course_num_credits_str),
+                "title", BCON_UTF8(course_title),
+                "description", BCON_UTF8(course_description),
+                "school", BCON_UTF8("123ABC"),
+                "preRequisites", BCON_UTF8(prerequisites),
+                "coRequisites", BCON_UTF8(corequisites),
+                "equivalencies", BCON_UTF8(equivalencies), 
+            "}"
+        );
+        opts = mongoc_find_and_modify_opts_new();
+        mongoc_find_and_modify_opts_set_update(opts, update);
+        mongoc_find_and_modify_opts_set_flags(
+            opts, 
+            MONGOC_FIND_AND_MODIFY_UPSERT | MONGOC_FIND_AND_MODIFY_RETURN_NEW
+        );
+        bool success = mongoc_collection_find_and_modify_with_opts(collection, &query, opts, &reply, &error);
+        if (success) {
+            char *str;
+            str = bson_as_canonical_extended_json(&reply, NULL);
+            printf("%s\n\n", str);
+            bson_free(str);
+        } else {
+            fprintf (stderr, "Got error: \"%s\" on line %d\n", error.message, __LINE__);
         }
-        char *str = bson_as_canonical_extended_json(doc, NULL);
-        printf("%s\n", str);
-        bson_free(str);
-        bson_destroy(doc);
+
+        bson_destroy (&reply);
+        bson_destroy (update);
+        bson_destroy (&query);
+        mongoc_find_and_modify_opts_destroy (opts);
     }
 }
 
-void get_courses(
+void update_courses(
     CourseSubjectScraper course_subject_scraper, 
     int* num_courses,
     mongoc_client_t *client,
@@ -207,7 +218,7 @@ void get_courses(
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
 
-            get_each_course(&description_tidy_buffer, num_courses, client, collection);
+            update_each_course(&description_tidy_buffer, num_courses, client, collection);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
             return;

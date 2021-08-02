@@ -41,9 +41,10 @@ int main(int argc, char** argv) {
   // There are 8958 individual courses 
   // subject_page_urls[73] is CPSC
 
+  // int num_courses = 0;
   // CourseSubjectScraper course_subject_scraper;
   // course_subject_scraper.url = subject_page_urls[63];
-  // get_courses(course_subject_scraper, &num_courses);
+  // get_courses(course_subject_scraper, &num_courses, client, collection);
   
   printf("num_courses: %d\n", num_courses);
 

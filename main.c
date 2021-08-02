@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     (char **) malloc(MAX_LINKS * (sizeof(char *)))
   };
 
-  int num_urls;
+  int num_urls = 0;
   get_course_page_urls(subject_index_scraper, &num_urls);
 
   int num_course_codes = 0;

@@ -158,14 +158,13 @@ void update_each_course(
         BSON_APPEND_UTF8(&query, "subject", course_subject);
         BSON_APPEND_INT32(&query, "code", course_code);
 
-        // TODO: add proper school id
         update = BCON_NEW(
             "$set",
             "{", 
                 "credits", BCON_UTF8(course_num_credits_str),
                 "title", BCON_UTF8(course_title),
                 "description", BCON_UTF8(course_description),
-                "school", BCON_UTF8("123ABC"),
+                "school", BCON_UTF8("610c63e20a8b78fa35442946"),
                 "preRequisites", BCON_UTF8(prerequisites),
                 "coRequisites", BCON_UTF8(corequisites),
                 "equivalencies", BCON_UTF8(equivalencies), 

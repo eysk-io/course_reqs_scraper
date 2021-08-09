@@ -8,14 +8,7 @@
 
 int main(int argc, char** argv) {
   mongoc_init ();
-  char mongo_client_url[50];
-  strcpy(mongo_client_url, "mongodb+srv://");
-  strcat(mongo_client_url, getenv("MONGO_USER"));
-  strcat(mongo_client_url, ":");
-  strcat(mongo_client_url, getenv("MONGO_PASS"));
-  strcat(mongo_client_url, "@coursereqs.qx9pi.mongodb.net/course_reqs_db?retryWrites=true&w=majority");
-  
-  mongoc_client_t *client = mongoc_client_new (mongo_client_url);
+  mongoc_client_t *client = mongoc_client_new (getenv("MONGO_URI"));
   mongoc_collection_t *collection = mongoc_client_get_collection(client, "course_reqs_db", "courses");
   
   printf("Started...\n");

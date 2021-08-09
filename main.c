@@ -13,10 +13,10 @@ int main(int argc, char** argv) {
   strcat(mongo_client_url, getenv("MONGO_USER"));
   strcat(mongo_client_url, ":");
   strcat(mongo_client_url, getenv("MONGO_PASS"));
-  strcat(mongo_client_url, "@coursereqs.qx9pi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
+  strcat(mongo_client_url, "@coursereqs.qx9pi.mongodb.net/course_reqs_db?retryWrites=true&w=majority");
   
   mongoc_client_t *client = mongoc_client_new (mongo_client_url);
-  mongoc_collection_t *collection = mongoc_client_get_collection(client, "courses_db", "courses_coll");
+  mongoc_collection_t *collection = mongoc_client_get_collection(client, "course_reqs_db", "courses");
   
   printf("Started...\n");
   SubjectIndexScraper subject_index_scraper = {

@@ -3,3 +3,6 @@ clean:
 
 debug:
 	gdb ./main
+
+test:
+	gcc tests.c -o tests && ./tests

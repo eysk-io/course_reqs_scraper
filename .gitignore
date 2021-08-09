@@ -1,5 +1,6 @@
 *.o
 main
+tests
 io
 .DS_STORE
 /mongo_c_driver

@@ -164,7 +164,7 @@ void update_each_course(
                 "credits", BCON_UTF8(course_num_credits_str),
                 "title", BCON_UTF8(course_title),
                 "description", BCON_UTF8(course_description),
-                "school", BCON_UTF8("610c63e20a8b78fa35442946"),
+                "school", BCON_UTF8("UBC"),
                 "preRequisites", BCON_UTF8(prerequisites),
                 "coRequisites", BCON_UTF8(corequisites),
                 "equivalencies", BCON_UTF8(equivalencies), 

@@ -113,12 +113,7 @@ void get_requisites(char** course_description, char** prerequisites, char** core
     }
 }
 
-void update_each_course(
-    TidyBuffer* tidy_buffer, 
-    int* num_courses,
-    mongoc_client_t *client,
-    mongoc_collection_t *collection
-) {
+void update_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
     char* tail = (char*) tidy_buffer->bp;
     while(strstr(tail, "</dd>")) {
         *num_courses = *num_courses + 1;
@@ -176,6 +171,9 @@ void update_each_course(
             opts, 
             MONGOC_FIND_AND_MODIFY_UPSERT | MONGOC_FIND_AND_MODIFY_RETURN_NEW
         );
+
+        mongoc_client_t *client = mongoc_client_new (getenv("MONGO_URI"));
+        mongoc_collection_t *collection = mongoc_client_get_collection(client, "course_reqs_db", "courses");
         bool success = mongoc_collection_find_and_modify_with_opts(collection, &query, opts, &reply, &error);
         if (success) {
             char *str;
@@ -190,15 +188,12 @@ void update_each_course(
         bson_destroy (update);
         bson_destroy (&query);
         mongoc_find_and_modify_opts_destroy (opts);
+        mongoc_collection_destroy(collection);
+        mongoc_client_destroy(client);
     }
 }
 
-void update_courses(
-    CourseSubjectScraper course_subject_scraper, 
-    int* num_courses,
-    mongoc_client_t *client,
-    mongoc_collection_t *collection
-) {
+void update_courses(CourseSubjectScraper course_subject_scraper, int* num_courses) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -230,7 +225,7 @@ void update_courses(
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
 
-            update_each_course(&description_tidy_buffer, num_courses, client, collection);
+            update_each_course(&description_tidy_buffer, num_courses);
         } else {
             printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
             return;

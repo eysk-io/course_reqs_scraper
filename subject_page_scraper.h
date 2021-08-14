@@ -10,7 +10,7 @@
 #define EQUIVALENCY_TAG "<em>Equivalency:</em>"
 
 typedef struct subject_page_scraper {
-  char * url;
+  char* url;
 } subject_page_scraper_t;
 
 size_t course_subject_buffer_callback(

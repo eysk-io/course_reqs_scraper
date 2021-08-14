@@ -45,16 +45,6 @@ int main(int argc, char** argv) {
   
   tpool_wait(tm);
   tpool_destroy(tm);
-
-  // Getting courses by individual course codes:
-  // There are 260 course codes
-  // There are 8958 individual courses 
-  // subject_page_urls[73] is CPSC
-
-  // size_t num_courses = 0;
-  // subject_page_scraper_t subject_page_scraper;
-  // subject_page_scraper.url = subject_page_urls[63];
-  // update_courses(subject_page_scraper, &num_courses, client, collection);
   
   size_t num_courses = 0;
   for (size_t i = 0; i < num_urls; i++) {

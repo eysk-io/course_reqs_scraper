@@ -9,6 +9,7 @@
 
 int main(int argc, char** argv) {
   mongoc_init();
+  tpool_t* tm;
   
   printf("Started...\n");
   index_page_scraper_t index_page_scraper = {
@@ -26,13 +27,19 @@ int main(int argc, char** argv) {
     num_course_codes++;
   }
 
-  size_t num_courses = 0;
+  const size_t num_threads = 4;
+  tm = tpool_create(num_threads);
+
+  subject_page_scraper_t* scrapers = malloc(sizeof(subject_page_scraper_t) * num_urls);
   for (size_t i = 0; i < num_urls; i++) {
-    printf("code number %ld: %s\n", i + 1, subject_page_urls[i]); 
-    subject_page_scraper_t subject_page_scraper;
-    subject_page_scraper.url = subject_page_urls[i];
-    update_courses(subject_page_scraper, &num_courses);
+    printf("Code Number %ld: %s\n", i + 1, subject_page_urls[i]); 
+    subject_page_scraper_t* subject_page_scraper = scrapers + i;
+    subject_page_scraper->url = subject_page_urls[i];
+    subject_page_scraper->num_courses = 0;
+    update_courses(subject_page_scraper);
   }
+  
+  tpool_wait(tm);
 
   // Getting courses by individual course codes:
   // There are 260 course codes
@@ -44,7 +51,13 @@ int main(int argc, char** argv) {
   // subject_page_scraper.url = subject_page_urls[63];
   // update_courses(subject_page_scraper, &num_courses, client, collection);
   
-  printf("num_courses: %ld\n", num_courses);
+  size_t num_courses = 0;
+  for (size_t i = 0; i < num_urls; i++) {
+    subject_page_scraper_t* subject_page_scraper = scrapers + i;
+    printf("Number of Courses for %s: %ld\n", subject_page_scraper->url, subject_page_scraper->num_courses);
+    num_courses += subject_page_scraper->num_courses;
+  }
+  printf("Total Number of Courses: %ld\n", num_courses);
 
   free(subject_page_urls);
   mongoc_cleanup();

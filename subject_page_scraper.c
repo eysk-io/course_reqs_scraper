@@ -194,7 +194,7 @@ void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
     }
 }
 
-void update_courses(subject_page_scraper_t subject_page_scraper, size_t* num_courses) {
+void update_courses(subject_page_scraper_t* subject_page_scraper) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -204,7 +204,7 @@ void update_courses(subject_page_scraper_t subject_page_scraper, size_t* num_cou
     TidyBuffer description_tidy_buffer = {0};
 
     if (handle) {
-        curl_easy_setopt(handle, CURLOPT_URL, subject_page_scraper.url); // set URL
+        curl_easy_setopt(handle, CURLOPT_URL, subject_page_scraper->url); // set URL
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, course_subject_buffer_callback); // set output callback function
         curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err_buff);
 
@@ -218,16 +218,16 @@ void update_courses(subject_page_scraper_t subject_page_scraper, size_t* num_cou
         res = curl_easy_perform(handle); // execute request, return status code to res
 
         if (res == CURLE_OK) {
-            printf("Parsed all courses from: %s\n", subject_page_scraper.url);
+            printf("Parsed all courses from: %s\n", subject_page_scraper->url);
 
             tidyParseBuffer(parse_doc, &tidy_buffer);
 
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc));
 
-            update_each_course(&description_tidy_buffer, num_courses);
+            update_each_course(&description_tidy_buffer, &(subject_page_scraper->num_courses));
         } else {
-            printf("Failed to parse courses from: %s\n", subject_page_scraper.url);
+            printf("Failed to parse courses from: %s\n", subject_page_scraper->url);
             return;
         }
         curl_easy_cleanup(handle);

@@ -14,7 +14,6 @@ void worker(void* arg) {
 
 int main(int argc, char** argv) {
   mongoc_init();
-  tpool_t* tm;
   
   printf("Started...\n");
   index_page_scraper_t index_page_scraper = {
@@ -33,7 +32,7 @@ int main(int argc, char** argv) {
   }
 
   const size_t num_threads = 4;
-  tm = tpool_create(num_threads);
+  tpool_t* tm = tpool_create(num_threads);
 
   subject_page_scraper_t* scrapers = malloc(sizeof(subject_page_scraper_t) * num_urls);
   for (size_t i = 0; i < num_urls; i++) {
@@ -45,6 +44,7 @@ int main(int argc, char** argv) {
   }
   
   tpool_wait(tm);
+  tpool_destroy(tm);
 
   // Getting courses by individual course codes:
   // There are 260 course codes
@@ -66,6 +66,5 @@ int main(int argc, char** argv) {
 
   free(subject_page_urls);
   free(scrapers);
-  tpool_destroy(tm);
   mongoc_cleanup();
 }

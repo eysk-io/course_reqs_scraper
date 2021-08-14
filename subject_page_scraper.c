@@ -6,28 +6,25 @@
 #include <tidy.h>
 #include <tidybuffio.h>
 #include <mongoc/mongoc.h>
-#include "course_subject_scraper.h"
-
-#define MAX_LINKS 1000
-#define MAX_URL_LEN 512
-#define MAX_REQS 10
-
-char* PREREQUISITES_TAG = "<em>Prerequisite:</em>";
-char* COREQUISITES_TAG = "<em>Corequisite:</em>";
-char* EQUIVALENCIES_TAG = "<em>Equivalencies:</em>";
-char* EQUIVALENCY_TAG = "<em>Equivalency:</em>";
+#include "subject_page_scraper.h"
 
 size_t course_subject_buffer_callback(
-  char * buffer,
+  char* buffer,
   size_t size,
   size_t num_members,
-  TidyBuffer * tidy_buffer) {
+  TidyBuffer* tidy_buffer
+) {
     size_t new_size = size * num_members;
     tidyBufAppend(tidy_buffer, buffer, new_size);
     return new_size;
 };
 
-void parse_node_for_descriptions(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode node, struct Course* courses) {
+void parse_node_for_descriptions(
+    TidyDoc doc, 
+    TidyBuffer* tidy_buffer, 
+    TidyNode node, 
+    course_t* courses
+) {
     TidyNode child;
     for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
         if (
@@ -40,15 +37,15 @@ void parse_node_for_descriptions(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode 
     }
 }
 
-char *split(char *str, const char *delim) {
-    char *p = strstr(str, delim);
+char* split(char* str, const char* delim) {
+    char* p = strstr(str, delim);
     if (p == NULL) return NULL;
     *p = '\0';
     return p + strlen(delim);
 }
 
-char *trim_white_space(char *str) {
-    char *end;
+char* trim_white_space(char* str) {
+    char* end;
     while (isspace((unsigned char) *str)) {
         str++;
     }
@@ -61,7 +58,12 @@ char *trim_white_space(char *str) {
     return str;
 }
 
-void get_requisites(char** course_description, char** prerequisites, char** corequisites, char** equivalencies) {
+void get_requisites(
+    char** course_description, 
+    char** prerequisites, 
+    char** corequisites, 
+    char** equivalencies
+) {
     if (strstr(*course_description, PREREQUISITES_TAG)) {
         *prerequisites = split(*course_description, PREREQUISITES_TAG);
         *prerequisites = trim_white_space(*prerequisites);
@@ -113,7 +115,7 @@ void get_requisites(char** course_description, char** prerequisites, char** core
     }
 }
 
-void update_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
+void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
     char* tail = (char*) tidy_buffer->bp;
     while(strstr(tail, "</dd>")) {
         *num_courses = *num_courses + 1;
@@ -193,7 +195,7 @@ void update_each_course(TidyBuffer* tidy_buffer, int* num_courses) {
     }
 }
 
-void update_courses(CourseSubjectScraper course_subject_scraper, int* num_courses) {
+void update_courses(subject_page_scraper_t subject_page_scraper, size_t* num_courses) {
     CURL *handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
@@ -203,7 +205,7 @@ void update_courses(CourseSubjectScraper course_subject_scraper, int* num_course
     TidyBuffer description_tidy_buffer = {0};
 
     if (handle) {
-        curl_easy_setopt(handle, CURLOPT_URL, course_subject_scraper.url); // set URL
+        curl_easy_setopt(handle, CURLOPT_URL, subject_page_scraper.url); // set URL
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, course_subject_buffer_callback); // set output callback function
         curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err_buff);
 
@@ -217,17 +219,17 @@ void update_courses(CourseSubjectScraper course_subject_scraper, int* num_course
         res = curl_easy_perform(handle); // execute request, return status code to res
 
         if (res == CURLE_OK) {
-            printf("Parsed all courses from: %s\n", course_subject_scraper.url);
+            printf("Parsed all courses from: %s\n", subject_page_scraper.url);
 
             tidyParseBuffer(parse_doc, &tidy_buffer);
-            course_subject_scraper.courses = malloc(sizeof(struct Courses*));
+            subject_page_scraper.courses = malloc(sizeof(struct Courses*));
 
             tidyBufInit(&description_tidy_buffer);
-            parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), course_subject_scraper.courses);
+            parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), subject_page_scraper.courses);
 
             update_each_course(&description_tidy_buffer, num_courses);
         } else {
-            printf("Failed to parse courses from: %s\n", course_subject_scraper.url);
+            printf("Failed to parse courses from: %s\n", subject_page_scraper.url);
             return;
         }
         curl_easy_cleanup(handle);

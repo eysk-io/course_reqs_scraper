@@ -3,24 +3,21 @@
 #include <curl/curl.h>
 #include <tidy.h>
 #include <tidybuffio.h>
-#include "subject_index_scraper.h"
+#include "index_page_scraper.h"
 
-#define MAX_LINKS 1000
-#define MAX_URL_LEN 512
-#define COURSE_CODE_LINK "courses.cfm?page=name&code="
-int current_subject_index = 0;
+size_t current_subject_index = 0;
 
 size_t subject_index_buffer_callback(
-  char * buffer,
+  char* buffer,
   size_t size,
   size_t num_members,
-  TidyBuffer * tidy_buffer) {
+  TidyBuffer* tidy_buffer) {
     size_t new_size = size * num_members;
     tidyBufAppend(tidy_buffer, buffer, new_size);
     return new_size;
 };
 
-void parse_node_for_href(TidyNode node, char ** output) {
+void parse_node_for_href(TidyNode node, char** output) {
   TidyNode child;
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr href_attr = tidyAttrGetById(child, TidyAttr_HREF);
@@ -39,9 +36,9 @@ void parse_node_for_href(TidyNode node, char ** output) {
   }
 }
 
-int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
-  if (subject_index_scraper.url) {
-    CURL *handle;
+int get_all_urls_on_page(index_page_scraper_t index_page_scraper) {
+  if (index_page_scraper.url) {
+    CURL* handle;
     handle = curl_easy_init();
     char err_buff[CURL_ERROR_SIZE];
     int res;
@@ -49,7 +46,7 @@ int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
     TidyBuffer tidy_buffer = {0};
 
     if (handle) {
-      curl_easy_setopt(handle, CURLOPT_URL, subject_index_scraper.url); // set URL
+      curl_easy_setopt(handle, CURLOPT_URL, index_page_scraper.url); // set URL
       curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, subject_index_buffer_callback); // set output callback function
       curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err_buff);
 
@@ -63,17 +60,17 @@ int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
       res = curl_easy_perform(handle); // execute request, return status code to res
 
       if (res == CURLE_OK) {
-        printf("Parsed all course pages from: %s\n", subject_index_scraper.url);
+        printf("Parsed all course pages from: %s\n", index_page_scraper.url);
 
         tidyParseBuffer(parse_doc, &tidy_buffer);
 
-        for (int i = 0; i < MAX_LINKS; i ++) {
-          subject_index_scraper.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
+        for (size_t i = 0; i < MAX_LINKS; i ++) {
+          index_page_scraper.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
-        parse_node_for_href(tidyGetBody(parse_doc), subject_index_scraper.parsed_urls); // parse results
-        subject_index_scraper.parsed_urls = subject_index_scraper.parsed_urls;
+        parse_node_for_href(tidyGetBody(parse_doc), index_page_scraper.parsed_urls); // parse results
+        index_page_scraper.parsed_urls = index_page_scraper.parsed_urls;
       } else {
-        printf("Failed to parse course pages from: %s\n", subject_index_scraper.url);
+        printf("Failed to parse course pages from: %s\n", index_page_scraper.url);
         return 0;
       }
 
@@ -88,22 +85,22 @@ int get_all_urls_on_page(SubjectIndexScraper subject_index_scraper) {
   return 0;
 }
 
-void get_course_page_urls(SubjectIndexScraper subject_index_scraper, int *num_urls) {
-  if (get_all_urls_on_page(subject_index_scraper)) {
+void get_course_page_urls(index_page_scraper_t index_page_scraper, size_t* num_urls) {
+  if (get_all_urls_on_page(index_page_scraper)) {
     char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
-    for (int i = 1; i < current_subject_index; i++) {
+    for (size_t i = 1; i < current_subject_index; i++) {
       if (
-        subject_index_scraper.parsed_urls[i] &&
-        !strcmp(subject_index_scraper.parsed_urls[i - 1], subject_index_scraper.parsed_urls[i]) 
+        index_page_scraper.parsed_urls[i] &&
+        !strcmp(index_page_scraper.parsed_urls[i - 1], index_page_scraper.parsed_urls[i]) 
       ) {
-        if ((strlen(url_first_part) + strlen(subject_index_scraper.parsed_urls[i]) - 1) > MAX_URL_LEN) {
-          printf("max url length exceeded for %s%s", url_first_part, subject_index_scraper.parsed_urls[i]);
+        if ((strlen(url_first_part) + strlen(index_page_scraper.parsed_urls[i]) - 1) > MAX_URL_LEN) {
+          printf("max url length exceeded for %s%s", url_first_part, index_page_scraper.parsed_urls[i]);
           return;
         }
-        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(subject_index_scraper.parsed_urls[i]) + 1);
+        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(index_page_scraper.parsed_urls[i]) + 1);
         strcpy(course_page, url_first_part);
-        strcat(course_page, subject_index_scraper.parsed_urls[i]);
-        strcpy(subject_index_scraper.parsed_urls[i], course_page);
+        strcat(course_page, index_page_scraper.parsed_urls[i]);
+        strcpy(index_page_scraper.parsed_urls[i], course_page);
         (*num_urls)++;
       }
     }

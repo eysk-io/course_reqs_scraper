@@ -7,6 +7,11 @@
 #include "subject_page_scraper.h"
 #include "tpool.h"
 
+void worker(void* arg) {
+  subject_page_scraper_t* subject_page_scraper = (subject_page_scraper_t*) arg;
+  update_courses(subject_page_scraper);
+}
+
 int main(int argc, char** argv) {
   mongoc_init();
   tpool_t* tm;
@@ -36,7 +41,7 @@ int main(int argc, char** argv) {
     subject_page_scraper_t* subject_page_scraper = scrapers + i;
     subject_page_scraper->url = subject_page_urls[i];
     subject_page_scraper->num_courses = 0;
-    update_courses(subject_page_scraper);
+    tpool_add_work(tm, worker, subject_page_scraper);
   }
   
   tpool_wait(tm);

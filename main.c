@@ -8,8 +8,6 @@
 
 int main(int argc, char** argv) {
   mongoc_init ();
-  mongoc_client_t *client = mongoc_client_new (getenv("MONGO_URI"));
-  mongoc_collection_t *collection = mongoc_client_get_collection(client, "course_reqs_db", "courses");
   
   printf("Started...\n");
   SubjectIndexScraper subject_index_scraper = {
@@ -32,7 +30,7 @@ int main(int argc, char** argv) {
     printf("code number %d: %s\n", i + 1, subject_page_urls[i]); 
     CourseSubjectScraper course_subject_scraper;
     course_subject_scraper.url = subject_page_urls[i];
-    update_courses(course_subject_scraper, &num_courses, client, collection);
+    update_courses(course_subject_scraper, &num_courses);
   }
 
   // Getting courses by individual course codes:
@@ -48,7 +46,5 @@ int main(int argc, char** argv) {
   printf("num_courses: %d\n", num_courses);
 
   free(subject_page_urls);
-  mongoc_collection_destroy(collection);
-  mongoc_client_destroy(client);
   mongoc_cleanup();
 }

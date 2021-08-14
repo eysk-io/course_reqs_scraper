@@ -22,8 +22,7 @@ size_t course_subject_buffer_callback(
 void parse_node_for_descriptions(
     TidyDoc doc, 
     TidyBuffer* tidy_buffer, 
-    TidyNode node, 
-    course_t* courses
+    TidyNode node
 ) {
     TidyNode child;
     for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
@@ -33,7 +32,7 @@ void parse_node_for_descriptions(
         ) {
             tidyNodeGetText(doc, child, tidy_buffer);
         }
-        parse_node_for_descriptions(doc, tidy_buffer, child, courses);
+        parse_node_for_descriptions(doc, tidy_buffer, child);
     }
 }
 
@@ -222,10 +221,9 @@ void update_courses(subject_page_scraper_t subject_page_scraper, size_t* num_cou
             printf("Parsed all courses from: %s\n", subject_page_scraper.url);
 
             tidyParseBuffer(parse_doc, &tidy_buffer);
-            subject_page_scraper.courses = malloc(sizeof(struct Courses*));
 
             tidyBufInit(&description_tidy_buffer);
-            parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc), subject_page_scraper.courses);
+            parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc));
 
             update_each_course(&description_tidy_buffer, num_courses);
         } else {

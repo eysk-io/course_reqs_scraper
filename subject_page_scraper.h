@@ -9,20 +9,8 @@
 #define EQUIVALENCIES_TAG "<em>Equivalencies:</em>"
 #define EQUIVALENCY_TAG "<em>Equivalency:</em>"
 
-typedef struct course {
-    char* subject;
-    int code;
-    char* title;
-    char* description;
-    char* school;
-    int credits;
-    struct Requisites* pre_requisites;
-    struct Requisites* co_requisites;
-} course_t;
-
 typedef struct subject_page_scraper {
   char * url;
-  course_t* courses;
 } subject_page_scraper_t;
 
 size_t course_subject_buffer_callback(
@@ -31,12 +19,7 @@ size_t course_subject_buffer_callback(
     size_t num_members, 
     TidyBuffer* tidy_buffer
 );
-void parse_node_for_descriptions(
-    TidyDoc doc, 
-    TidyBuffer* tidy_buffer, 
-    TidyNode node, 
-    course_t* courses
-);
+void parse_node_for_descriptions(TidyDoc doc, TidyBuffer* tidy_buffer, TidyNode node);
 
 char* split(char* str, const char* delim);
 char* trim_white_space(char* str);

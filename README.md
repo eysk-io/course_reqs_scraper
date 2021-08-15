@@ -2,15 +2,13 @@
 
 A simple scraper to get UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
 
-## Installing / Getting started
+## Getting started
 
-A quick introduction of the minimal setup you need to get a hello world up &
-running.
+By default the program supports `Linux`. As well, `make` and `gcc` are required. One way to install `make` and `gcc` on your `Linux` machine:
 
 ```shell
-packagemanager install awesome-project
-awesome-project start
-awesome-project "Do something!"  # prints "Nah."
+$ sudo apt-get install make
+$ sudo apt-get install gcc
 ```
 
 Here you should say what actually happens when you execute the code above.

@@ -53,12 +53,12 @@ Overall, the program is broken down into three main steps:
 
 1. Get links to each course subject page from http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name.
 
-2. Get each course and its information from each subject page
+2. Get each course and its information from each subject page.
     - ex. http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name&code=ADHE for all ADHE course information.
 
 3. Save all course data to a MongoDB database.
 
-To speed up the process to retrieve and save course information, the program uses a `thread pool` to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
+To speed up the process to retrieve and save course information, the program uses a thread pool `(tpool.h/tpool.c)`to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
 
 ## Configuration
 

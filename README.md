@@ -36,11 +36,11 @@ make
 ./main 4
 ```
 
-This will run the program with 4 threads.
+This will run the program with 4 threads in a thread pool.
 
 ## Features
 
-Overall, the program is broken down into three main steps:
+Overall, the program is broken down into three main features:
 
 1. Retrieve links to each course subject page from http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name.
 
@@ -49,7 +49,7 @@ Overall, the program is broken down into three main steps:
 
 3. Save all course data to a MongoDB database.
 
-To speed up the process to retrieve and save course information, the program uses a thread pool - `tpool.c` - to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
+To speed up the process to retrieve and save course information, there is an option to use multiple threads in a thread pool - `tpool.c`. This will parallelize the process of saving each subject's courses.
 
 ### Upcoming
 

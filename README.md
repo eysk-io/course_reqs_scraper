@@ -17,32 +17,17 @@ Finally, an environment variable - `$MONGO_URI` - with your MongoDB database URI
 
 By default, the database name is: `course_reqs_db`. The collection name is `courses`. This can be found in `subject_page_scraper.c`. 
 
-## Developing
+### Building & Running the Program
 
-Here's a brief intro about what a developer must do in order to start developing
-the project further:
-
-```shell
-git clone https://github.com/your/awesome-project.git
-cd awesome-project/
-packagemanager install
-```
-
-And state what happens step-by-step.
-
-### Building
-
-If your project needs some additional steps for the developer to build the
-project after some code changes, state them here:
+A Makefile is included to simplify the build process. In short, to build and run the program: 
 
 ```shell
-./configure
+git clone git@github.com:eyskim/course_reqs_scraper.git
+cd course_reqs_scraper/
+make clean
 make
-make install
+./main
 ```
-
-Here again you should state what actually happens when the code above gets
-executed.
 
 ## Features
 

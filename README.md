@@ -5,6 +5,7 @@
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/eyskim/course_reqs_scraper">
   <img alt="GitHub followers" src="https://img.shields.io/github/followers/eyskim?style=social">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/eyskim/course_reqs_scraper">
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/eyskim/course_reqs_scraper">
 </p>
 
 A simple web scraper to retrieve UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.

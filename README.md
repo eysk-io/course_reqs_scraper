@@ -55,23 +55,6 @@ To speed up the process to retrieve and save course information, there is an opt
 
 - Correctly parsed pre/co-requisites and equivalent course information
 
-## Configuration
-
-Here you should write what are all of the configurations a user can enter when
-using the project.
-
-#### Argument 1
-Type: `String`  
-Default: `'default value'`
-
-State what an argument does and how you can use it. If needed, you can provide
-an example below.
-
-Example:
-```bash
-awesome-project "Some other value"  # Prints "You're nailing this readme!"
-```
-
 ## Contributing
 
 If you'd like to contribute, please fork the repository and use a feature branch. Pull requests are welcome.

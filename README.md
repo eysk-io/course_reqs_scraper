@@ -2,18 +2,18 @@
 
 A simple scraper to get UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
 
-## Getting started
+## Getting Started
 
-By default the program supports `Linux`. As well, `make` and `gcc` are required. One way to install `make` and `gcc` on your `Linux` machine:
+The program supports building and running on `Linux`. As well, `make` and `gcc` are required. One way to install `make` and `gcc` on your `Linux` machine:
 
 ```shell
 $ sudo apt-get install make
 $ sudo apt-get install gcc
 ```
 
-Here you should say what actually happens when you execute the code above.
+In addition, `mongo-c-driver` is required to run the program. For more information and installation: https://github.com/mongodb/mongo-c-driver.
 
-### Initial Configuration
+Finally, 
 
 Some projects require initial configuration (e.g. access tokens or keys, `npm i`).
 This is the section where you would document those requirements.
@@ -55,6 +55,10 @@ Overall, the program is broken down into three main steps:
     - ex. http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name&code=ADHE for all ADHE course information.
 
 3. Save all course data to a MongoDB database.
+
+#### Upcoming
+
+- Correctly parsed pre/co-requisites and equivalent course information
 
 To speed up the process to retrieve and save course information, the program uses a thread pool - `tpool.c` - to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
 

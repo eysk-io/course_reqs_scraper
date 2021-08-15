@@ -1,10 +1,10 @@
 # UBC Course Info Scraper
 
-A simple scraper to get UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
+A simple scraper to retrieve UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
 
 ## Getting Started
 
-The program supports building and running on `Linux`. As well, `make` and `gcc` are required. One way to install `make` and `gcc` on your `Linux` machine:
+The program supports building and running on the `Linux` operating system. As well, `make` and `gcc` should be installed. One way to install `make` and `gcc` on your `Linux` machine:
 
 ```shell
 $ sudo apt-get install make
@@ -13,10 +13,9 @@ $ sudo apt-get install gcc
 
 In addition, `mongo-c-driver` is required to run the program. For more information and installation: https://github.com/mongodb/mongo-c-driver.
 
-Finally, 
+Finally, an environment variable - `$MONGO_URI` - with your MongoDB database URI should be set for use by the program. For example, if your MongoDB URI is `mongodb+srv://user:password.mongodb.net`, your environment variable should be set as `MONGO_URI=mongodb+srv://user:password.mongodb.net`. This is the database in which all course data will be saved. 
 
-Some projects require initial configuration (e.g. access tokens or keys, `npm i`).
-This is the section where you would document those requirements.
+By default, the database name is: `course_reqs_db`. The collection name is `courses`. This can be found in `subject_page_scraper.c`. 
 
 ## Developing
 
@@ -49,14 +48,14 @@ executed.
 
 Overall, the program is broken down into three main steps:
 
-1. Get links to each course subject page from http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name.
+1. Retrieve links to each course subject page from http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name.
 
-2. Get each course and its information from each subject page.
+2. Retrieve each course and its information from each subject page.
     - ex. http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name&code=ADHE for all ADHE course information.
 
 3. Save all course data to a MongoDB database.
 
-#### Upcoming
+### Upcoming
 
 - Correctly parsed pre/co-requisites and equivalent course information
 

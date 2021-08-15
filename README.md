@@ -55,11 +55,11 @@ Overall, the program is broken down into three main steps:
 
 3. Save all course data to a MongoDB database.
 
+To speed up the process to retrieve and save course information, the program uses a thread pool - `tpool.c` - to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
+
 ### Upcoming
 
 - Correctly parsed pre/co-requisites and equivalent course information
-
-To speed up the process to retrieve and save course information, the program uses a thread pool - `tpool.c` - to parallelize processes. Specifically, saving each subject's courses is performed by each thread.
 
 ## Configuration
 

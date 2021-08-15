@@ -5,7 +5,7 @@
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/eyskim/course_reqs_scraper">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/eyskim/course_reqs_scraper">
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/eyskim/course_reqs_scraper">
-  <img alt="LGTM Grade" src="https://img.shields.io/lgtm/grade/c/github/eyskim/course_reqs_scraper">
+  <img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/eyskim/course_reqs_scraper">
 </p>
 
 <p align="center">

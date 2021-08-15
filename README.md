@@ -1,6 +1,6 @@
-# UBC Course Info Scraper
+# UBC Course Info Web Scraper
 
-A simple scraper to retrieve UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
+A simple web scraper to retrieve UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.
 
 ## Getting Started
 

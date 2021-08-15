@@ -2,6 +2,7 @@
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/github/license/eyskim/course_reqs_scraper">
+  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/eyskim/course_reqs_scraper">
 </p>
 
 A simple web scraper to retrieve UBC course information as provided by http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name and saved to a MongoDB database.

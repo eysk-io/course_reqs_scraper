@@ -29,6 +29,15 @@ make
 ./main
 ```
 
+This will build and run the program with 1 thread. You can also specify the number of threads you want to run the program with. For example:
+
+```
+make
+./main 4
+```
+
+This will run the program with 4 threads.
+
 ## Features
 
 Overall, the program is broken down into three main steps:
@@ -62,12 +71,6 @@ Example:
 ```bash
 awesome-project "Some other value"  # Prints "You're nailing this readme!"
 ```
-
-#### Argument 2
-Type: `Number|Boolean`  
-Default: 100
-
-Copy-paste as many of these as you need.
 
 ## Contributing
 

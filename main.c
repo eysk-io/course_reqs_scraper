@@ -13,9 +13,18 @@ void worker(void* arg) {
 }
 
 int main(int argc, char** argv) {
+  printf("Started...\n");
+  
+  size_t num_threads;
+  if (argc != 2) {
+    num_threads = 1;
+  } else {
+    num_threads = strtol(argv[1], NULL, 10);
+  }
+  printf("Number of threads: %ld\n", num_threads);
+
   mongoc_init();
   
-  printf("Started...\n");
   index_page_scraper_t index_page_scraper = {
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",
     (char**) malloc(MAX_LINKS * (sizeof(char*)))
@@ -31,7 +40,6 @@ int main(int argc, char** argv) {
     num_course_codes++;
   }
 
-  const size_t num_threads = 4;
   tpool_t* tm = tpool_create(num_threads);
 
   subject_page_scraper_t* scrapers = malloc(sizeof(subject_page_scraper_t) * num_urls);

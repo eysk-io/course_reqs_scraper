@@ -161,6 +161,7 @@ void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
                 "title", BCON_UTF8(course_title),
                 "description", BCON_UTF8(course_description),
                 "school", BCON_UTF8("UBC"),
+                "notes", BCON_UTF8(""),
                 // "preRequisites", BCON_UTF8(prerequisites),
                 // "coRequisites", BCON_UTF8(corequisites),
                 // "equivalencies", BCON_UTF8(equivalencies), 

@@ -141,9 +141,9 @@ void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
         char* corequisites = '\0';
         char* equivalencies = '\0';
         get_requisites(&course_description, &prerequisites, &corequisites, &equivalencies);
-        prerequisites = prerequisites ? prerequisites : "none";
-        corequisites = corequisites ? corequisites : "none";
-        equivalencies = equivalencies ? equivalencies : "none";
+        prerequisites = prerequisites ? prerequisites : "";
+        corequisites = corequisites ? corequisites : "";
+        equivalencies = equivalencies ? equivalencies : "";
 
         mongoc_find_and_modify_opts_t *opts;
         bson_t reply;
@@ -162,9 +162,12 @@ void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
                 "description", BCON_UTF8(course_description),
                 "school", BCON_UTF8("UBC"),
                 "notes", BCON_UTF8(""),
-                "preRequisites", "[", BCON_UTF8(prerequisites), "]",
-                "coRequisites", "[", BCON_UTF8(corequisites), "]",
-                "equivalencies", "[", BCON_UTF8(equivalencies), "]", 
+                "preRequisitesText", BCON_UTF8(prerequisites),
+                "coRequisitesText", BCON_UTF8(corequisites),
+                "equivalenciesText", BCON_UTF8(equivalencies), 
+                "preRequisites", "[", "]",
+                "coRequisites", "[", "]",
+                "equivalencies", "[", "]", 
             "}"
         );
         opts = mongoc_find_and_modify_opts_new();

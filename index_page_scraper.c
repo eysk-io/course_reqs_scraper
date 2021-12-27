@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <tidy.h>
 #include <tidybuffio.h>
+#include <mongoc/mongoc.h>
 #include "index_page_scraper.h"
 
 size_t current_subject_index = 0;
@@ -105,4 +106,56 @@ void get_course_page_urls(index_page_scraper_t index_page_scraper, size_t* num_u
       }
     }
   }
+}
+
+void update_school(char** subject_page_urls, size_t num_urls) {
+  bson_t*     document;
+  bson_t      child;
+  struct tm   schoolName = { 0 };
+  char        buf[128];
+  const       char *key;
+  size_t      keylen;
+  bson_t query = BSON_INITIALIZER;
+  document = bson_new();
+
+  BSON_APPEND_UTF8(document, "name", "UBC");
+  BSON_APPEND_UTF8(&query, "name", "UBC");
+
+  BSON_APPEND_ARRAY_BEGIN(document, "subjects", &child);
+  for (size_t i = 0; i < num_urls; i++) {
+      keylen = bson_uint32_to_string(i, &key, buf, sizeof buf);
+      bson_append_utf8(&child, key, (int)keylen, subject_page_urls[i], -1);
+  }
+  bson_append_array_end(document, &child);
+  // char* str = bson_as_canonical_extended_json (document, NULL);
+  // printf ("%s\n", str);
+  // bson_free (str);
+
+  mongoc_find_and_modify_opts_t *opts;
+  bson_t reply;
+  bson_error_t error;
+
+  opts = mongoc_find_and_modify_opts_new();
+  mongoc_find_and_modify_opts_set_update(opts, document);
+  mongoc_find_and_modify_opts_set_flags(
+    opts, 
+    MONGOC_FIND_AND_MODIFY_UPSERT | MONGOC_FIND_AND_MODIFY_RETURN_NEW
+  );
+  mongoc_client_t *client = mongoc_client_new (getenv("MONGO_URI"));
+  mongoc_collection_t *collection = mongoc_client_get_collection(client, "course_reqs_db", "schools");
+  bool success = mongoc_collection_find_and_modify_with_opts(collection, &query, opts, &reply, &error);
+  if (success) {
+      char *str;
+      str = bson_as_canonical_extended_json(&reply, NULL);
+      printf("%s\n\n", str);
+      bson_free(str);
+  } else {
+      fprintf (stderr, "Got error: \"%s\" on line %d\n", error.message, __LINE__);
+  }
+
+  bson_destroy (&reply);
+  bson_destroy(document);
+  mongoc_find_and_modify_opts_destroy (opts);
+  mongoc_collection_destroy(collection);
+  mongoc_client_destroy(client);
 }

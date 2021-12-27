@@ -23,5 +23,6 @@ size_t subject_index_buffer_callback(
 void parse_node_for_href(TidyNode node, char** output);
 int get_all_urls_on_page(index_page_scraper_t index_page_scraper);
 void get_course_page_urls(index_page_scraper_t index_page_scraper, size_t* num_urls);
+void update_school(char** subject_page_urls, size_t num_urls);
 
 #endif

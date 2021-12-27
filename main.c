@@ -62,6 +62,8 @@ int main(int argc, char** argv) {
   }
   printf("Total Number of Courses: %ld\n", num_courses);
 
+  update_school(subject_page_urls, num_urls);
+
   free(subject_page_urls);
   free(scrapers);
   mongoc_cleanup();

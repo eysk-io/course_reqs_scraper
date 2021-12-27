@@ -13,7 +13,7 @@ subject_page_scraper.o: subject_page_scraper.c subject_page_scraper.h
 	$(CC) -c subject_page_scraper.c $(MONGOCONFIG)
 
 index_page_scraper.o: index_page_scraper.c index_page_scraper.h
-	$(CC) -c index_page_scraper.c
+	$(CC) -c index_page_scraper.c $(MONGOCONFIG)
 
 tpool.o: tpool.c tpool.h
 	$(CC) -c tpool.c

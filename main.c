@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   
   index_page_scraper_t index_page_scraper = {
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",
-    (char**) malloc(MAX_LINKS * (sizeof(char*)))
+    (char**) malloc(MAX_SUBJECT_INFO_NUM * (sizeof(char*)))
   };
 
   size_t num_urls = 0;

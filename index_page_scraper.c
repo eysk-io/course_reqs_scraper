@@ -23,7 +23,7 @@ void parse_node_for_href(TidyNode node, char** output) {
   for (child = tidyGetChild(node); child != NULL; child = tidyGetNext(child)) {
     TidyAttr href_attr = tidyAttrGetById(child, TidyAttr_HREF);
     if (href_attr) {
-      if (current_subject_index < MAX_LINKS) {
+      if (current_subject_index < MAX_SUBJECT_INFO_NUM) {
         if (
           strlen(tidyAttrValue(href_attr)) < MAX_URL_LEN &&
           strstr(tidyAttrValue(href_attr), COURSE_CODE_LINK)
@@ -65,7 +65,7 @@ int get_all_urls_on_page(index_page_scraper_t index_page_scraper) {
 
         tidyParseBuffer(parse_doc, &tidy_buffer);
 
-        for (size_t i = 0; i < MAX_LINKS; i ++) {
+        for (size_t i = 0; i < MAX_SUBJECT_INFO_NUM; i ++) {
           index_page_scraper.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
         parse_node_for_href(tidyGetBody(parse_doc), index_page_scraper.parsed_urls); // parse results

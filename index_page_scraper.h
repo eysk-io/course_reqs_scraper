@@ -9,9 +9,14 @@
 #define MAX_URL_LEN 512
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="
 
+typedef struct subject_info {
+  char* subject_url;
+  int* subject_codes;
+} subject_info_t;
+
 typedef struct index_page_scraper {
   char* url;
-  char** parsed_urls;
+  subject_info_t* subject_info;
 } index_page_scraper_t;
 
 size_t subject_index_buffer_callback(

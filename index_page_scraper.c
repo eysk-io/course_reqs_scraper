@@ -65,11 +65,16 @@ int get_all_urls_on_page(index_page_scraper_t index_page_scraper) {
 
         tidyParseBuffer(parse_doc, &tidy_buffer);
 
-        for (size_t i = 0; i < MAX_SUBJECT_INFO_NUM; i ++) {
-          index_page_scraper.parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
+        char** parsed_urls = (char**) malloc(MAX_SUBJECT_INFO_NUM * sizeof(char*));
+        for (size_t i = 0; i < MAX_SUBJECT_INFO_NUM; i++) {
+          index_page_scraper.subject_info[i].subject_url = (char *) malloc(MAX_URL_LEN * sizeof(char *));
+          parsed_urls[i] = (char *) malloc(MAX_URL_LEN * sizeof(char *));
         }
-        parse_node_for_href(tidyGetBody(parse_doc), index_page_scraper.parsed_urls); // parse results
-        index_page_scraper.parsed_urls = index_page_scraper.parsed_urls;
+
+        parse_node_for_href(tidyGetBody(parse_doc), parsed_urls); // parse results
+        for (size_t i = 0; i < MAX_SUBJECT_INFO_NUM; i++) {
+          index_page_scraper.subject_info[i].subject_url = parsed_urls[i];
+        }
       } else {
         printf("Failed to parse course pages from: %s\n", index_page_scraper.url);
         return 0;
@@ -91,17 +96,17 @@ void get_course_page_urls(index_page_scraper_t index_page_scraper, size_t* num_u
     char* url_first_part = "http://www.calendar.ubc.ca/vancouver/";
     for (size_t i = 1; i < current_subject_index; i++) {
       if (
-        index_page_scraper.parsed_urls[i] &&
-        !strcmp(index_page_scraper.parsed_urls[i - 1], index_page_scraper.parsed_urls[i]) 
+        index_page_scraper.subject_info[i].subject_url &&
+        !strcmp(index_page_scraper.subject_info[i - 1].subject_url, index_page_scraper.subject_info[i].subject_url)
       ) {
-        if ((strlen(url_first_part) + strlen(index_page_scraper.parsed_urls[i]) - 1) > MAX_URL_LEN) {
-          printf("max url length exceeded for %s%s", url_first_part, index_page_scraper.parsed_urls[i]);
+        if ((strlen(url_first_part) + strlen(index_page_scraper.subject_info[i].subject_url) - 1) > MAX_URL_LEN) {
+          printf("max url length exceeded for %s%s", url_first_part, index_page_scraper.subject_info[i].subject_url);
           return;
         }
-        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(index_page_scraper.parsed_urls[i]) + 1);
+        char *course_page = (char *) malloc (strlen(url_first_part) + strlen(index_page_scraper.subject_info[i].subject_url) + 1);
         strcpy(course_page, url_first_part);
-        strcat(course_page, index_page_scraper.parsed_urls[i]);
-        strcpy(index_page_scraper.parsed_urls[i], course_page);
+        strcat(course_page, index_page_scraper.subject_info[i].subject_url);
+        strcpy(index_page_scraper.subject_info[i].subject_url, course_page);
         (*num_urls)++;
       }
     }

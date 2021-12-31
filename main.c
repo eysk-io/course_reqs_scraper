@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   
   index_page_scraper_t index_page_scraper = {
     "http://www.calendar.ubc.ca/vancouver/courses.cfm?page=name",
-    (char**) malloc(MAX_SUBJECT_INFO_NUM * (sizeof(char*)))
+    (subject_info_t*) malloc(MAX_SUBJECT_INFO_NUM * (sizeof(subject_info_t)))
   };
 
   size_t num_urls = 0;
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
   size_t num_course_codes = 0;
   char** subject_page_urls = malloc(num_urls * sizeof(char*));
   for (size_t i = 1; i < (num_urls * 2); i+=2) {
-    subject_page_urls[num_course_codes] = index_page_scraper.parsed_urls[i];
+    subject_page_urls[num_course_codes] = index_page_scraper.subject_info[i].subject_url;
     num_course_codes++;
   }
 

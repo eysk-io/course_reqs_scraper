@@ -4,7 +4,7 @@
 #ifndef __INDEX_PAGE_SCRAPER__
 #define __INDEX_PAGE_SCRAPER__
 
-#define BUFFER_SIZE 2048;
+#define BUFFER_SIZE 2048
 #define MAX_SUBJECT_INFO_NUM 1000
 #define MAX_URL_LEN 512
 #define COURSE_CODE_LINK "courses.cfm?page=name&code="

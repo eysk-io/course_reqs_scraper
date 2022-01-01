@@ -12,6 +12,7 @@
 typedef struct subject_page_scraper {
   char* url;
   size_t num_courses;
+  int* subject_codes;
 } subject_page_scraper_t;
 
 size_t course_subject_buffer_callback(
@@ -31,7 +32,7 @@ void get_requisites(
     char** equivalency
 );
 
-void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses);
+void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses, int* subject_codes);
 void update_courses(subject_page_scraper_t* subject_page_scraper);
 
 #endif

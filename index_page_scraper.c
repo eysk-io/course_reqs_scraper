@@ -113,13 +113,18 @@ void get_course_page_urls(index_page_scraper_t index_page_scraper, size_t* num_u
   }
 }
 
-void update_school(char** subject_page_urls, size_t num_urls) {
+void update_school(index_page_scraper_t* index_page_scraper, size_t num_urls) {
   bson_t*     document;
   bson_t      child;
+  bson_t      child2;
+  bson_t      child3;
   struct tm   schoolName = { 0 };
   char        buf[128];
+  char        buf2[128];
   const       char *key;
+  const       char *key2;
   size_t      keylen;
+  size_t      keylen2;
   bson_t query = BSON_INITIALIZER;
   document = bson_new();
 
@@ -127,9 +132,18 @@ void update_school(char** subject_page_urls, size_t num_urls) {
   BSON_APPEND_UTF8(&query, "name", "UBC");
 
   BSON_APPEND_ARRAY_BEGIN(document, "subjects", &child);
-  for (size_t i = 0; i < num_urls; i++) {
-      keylen = bson_uint32_to_string(i, &key, buf, sizeof buf);
-      bson_append_utf8(&child, key, (int)keylen, subject_page_urls[i], -1);
+  for (size_t i = 1; i < (num_urls * 2); i+=2) {
+    keylen = bson_uint32_to_string(i, &key, buf, sizeof buf);
+    bson_append_document_begin(&child, key, (int) keylen, &child2);
+    BSON_APPEND_UTF8(&child2, "url", index_page_scraper->subject_info[i].subject_url);
+
+    BSON_APPEND_ARRAY_BEGIN(&child2, "codes", &child3);
+    for (size_t j = 0; j < index_page_scraper->subject_info[i].num_courses; j++) {
+      keylen2 = bson_uint32_to_string(j, &key2, buf2, sizeof buf2);
+      bson_append_int32(&child3, key2, keylen2, index_page_scraper->subject_info[i].subject_codes[j]);
+    }
+    bson_append_array_end(&child2, &child3);
+    bson_append_document_end(&child, &child2);
   }
   bson_append_array_end(document, &child);
   // char* str = bson_as_canonical_extended_json (document, NULL);

@@ -48,7 +48,9 @@ int main(int argc, char** argv) {
     subject_page_scraper_t* subject_page_scraper = scrapers + i;
     subject_page_scraper->url = subject_page_urls[i];
     subject_page_scraper->num_courses = 0;
+    subject_page_scraper->subject_codes = (int*) malloc(MAX_SUBJECT_CODES_NUM * sizeof(int));
     tpool_add_work(tm, worker, subject_page_scraper);
+    index_page_scraper.subject_info[i * 2 + 1].subject_codes = subject_page_scraper->subject_codes;
   }
   
   tpool_wait(tm);
@@ -57,12 +59,19 @@ int main(int argc, char** argv) {
   size_t num_courses = 0;
   for (size_t i = 0; i < num_urls; i++) {
     subject_page_scraper_t* subject_page_scraper = scrapers + i;
-    printf("Number of Courses for %s: %ld\n", subject_page_scraper->url, subject_page_scraper->num_courses);
+    index_page_scraper.subject_info[i * 2 + 1].num_courses = subject_page_scraper->num_courses;
+    printf("Number of Courses for %s: %ld\n", subject_page_scraper->url, index_page_scraper.subject_info[i * 2 + 1].num_courses);
     num_courses += subject_page_scraper->num_courses;
   }
   printf("Total Number of Courses: %ld\n", num_courses);
 
-  update_school(subject_page_urls, num_urls);
+  update_school(&index_page_scraper, num_urls);
+
+  for (size_t i = 0; i < num_urls; i++) {
+    free(index_page_scraper.subject_info[i * 2 + 1].subject_codes);
+    free(scrapers[i].url);
+  }
+  free(index_page_scraper.subject_info);
 
   free(subject_page_urls);
   free(scrapers);

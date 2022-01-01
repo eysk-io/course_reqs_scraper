@@ -114,15 +114,15 @@ void get_requisites(
     }
 }
 
-void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
+void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses, int* subject_codes) {
     char* tail = (char*) tidy_buffer->bp;
     while(strstr(tail, "</dd>")) {
-        *num_courses = *num_courses + 1;
         char* all_courses = tail;
         char* course_subject = split(all_courses, "</a>");
 
         char* course_code_str = split(course_subject, " ");
         int course_code = atoi(course_code_str);
+        subject_codes[*num_courses] = course_code;
 
         char* course_num_credits_str = split(course_code_str, " (");
 
@@ -189,6 +189,8 @@ void update_each_course(TidyBuffer* tidy_buffer, size_t* num_courses) {
             fprintf (stderr, "Got error: \"%s\" on line %d\n", error.message, __LINE__);
         }
 
+        *num_courses = *num_courses + 1;
+
         bson_destroy (&reply);
         bson_destroy (update);
         bson_destroy (&query);
@@ -229,7 +231,7 @@ void update_courses(subject_page_scraper_t* subject_page_scraper) {
             tidyBufInit(&description_tidy_buffer);
             parse_node_for_descriptions(parse_doc, &description_tidy_buffer, tidyGetBody(parse_doc));
 
-            update_each_course(&description_tidy_buffer, &(subject_page_scraper->num_courses));
+            update_each_course(&description_tidy_buffer, &(subject_page_scraper->num_courses), subject_page_scraper->subject_codes);
         } else {
             printf("Failed to parse courses from: %s\n", subject_page_scraper->url);
             return;

@@ -8,8 +8,6 @@ tpool_t* tpool_create(size_t num) {
     pthread_t thread;
     size_t i;
 
-    if (num == 0) num = 2;
-
     tm = calloc(1, sizeof(*tm));
     tm->alive_thread_count = num;
 

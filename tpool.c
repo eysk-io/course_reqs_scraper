@@ -18,7 +18,7 @@ tpool_t* tpool_create(size_t num) {
     tm->first = NULL;
     tm->last  = NULL;
 
-    for(i = 0; i < num; i++) {
+    for (i = 0; i < num; i++) {
         pthread_create(&thread, NULL, tpool_worker, tm);
         pthread_detach(thread);
     }
@@ -30,11 +30,11 @@ void tpool_destroy(tpool_t* tm) {
     tpool_work_t* work;
     tpool_work_t* work2;
 
-    if(tm == NULL) return;
+    if (tm == NULL) return;
 
     pthread_mutex_lock(&(tm->work_mutex));
     work = tm->first;
-    while(work != NULL) {
+    while (work != NULL) {
         work2 = work->next;
         tpool_work_destroy(work);
         work = work2;
@@ -55,14 +55,14 @@ void tpool_destroy(tpool_t* tm) {
 bool tpool_add_work(tpool_t* tm, thread_func_t func, void* arg) {
     tpool_work_t* work;
 
-    if(tm == NULL)
+    if (tm == NULL)
         return false;
 
     work = tpool_work_create(func, arg);
-    if(work == NULL) return false;
+    if (work == NULL) return false;
 
     pthread_mutex_lock(&(tm->work_mutex));
-    if(tm->first == NULL) {
+    if (tm->first == NULL) {
         tm->first = work;
         tm->last = tm->first;
     } else {
@@ -77,11 +77,11 @@ bool tpool_add_work(tpool_t* tm, thread_func_t func, void* arg) {
 }
 
 void tpool_wait(tpool_t* tm) {
-    if(tm == NULL) return;
+    if (tm == NULL) return;
 
     pthread_mutex_lock(&(tm->work_mutex));
     while(1) {
-        if(
+        if (
             (!tm->stop && tm->working_thread_count != 0) || 
             (tm->stop && tm->alive_thread_count != 0)
         ) {
@@ -130,26 +130,26 @@ void* tpool_worker(void* arg) {
     tpool_t* tm = arg;
     tpool_work_t* work;
 
-    while(1) {
+    while (1) {
         pthread_mutex_lock(&(tm->work_mutex));
 
-        while(tm->first == NULL && !tm->stop)
+        while (tm->first == NULL && !tm->stop)
             pthread_cond_wait(&(tm->has_work), &(tm->work_mutex));
 
-        if(tm->stop) break;
+        if (tm->stop) break;
 
         work = tpool_work_get(tm);
         tm->working_thread_count++;
         pthread_mutex_unlock(&(tm->work_mutex));
 
-        if(work != NULL) {
+        if (work != NULL) {
             work->func(work->arg);
             tpool_work_destroy(work);
         }
 
         pthread_mutex_lock(&(tm->work_mutex));
         tm->working_thread_count--;
-        if(
+        if (
             !tm->stop && tm->working_thread_count == 0 &&
             tm->first == NULL
         ) {

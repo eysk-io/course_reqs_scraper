@@ -16,16 +16,9 @@ A simple web scraper to retrieve UBC course information as provided by http://ww
 
 ## Getting Started
 
-This program supports building and running on the `Linux` operating system. As well, `make` and `gcc` should be installed. One way to install `make` and `gcc` on your `Linux` machine:
+`mongo-c-driver` is required to run the program. For more information and installation: https://github.com/mongodb/mongo-c-driver.
 
-```shell
-$ sudo apt-get install make
-$ sudo apt-get install gcc
-```
-
-In addition, `mongo-c-driver` is required to run the program. For more information and installation: https://github.com/mongodb/mongo-c-driver.
-
-Finally, an environment variable - `$MONGO_URI` - with your MongoDB database URI should be set for use by the program. For example, if your MongoDB URI is `mongodb+srv://user:password.mongodb.net`, your environment variable should be set as `MONGO_URI=mongodb+srv://user:password.mongodb.net`. This is the database in which all course data will be saved. 
+In addition, an environment variable - `$MONGO_URI` - with your MongoDB database URI should be set for use by the program. For example, if your MongoDB URI is `mongodb+srv://user:password.mongodb.net`, your environment variable should be set as `MONGO_URI=mongodb+srv://user:password.mongodb.net`. This is the database in which all course data will be saved. 
 
 By default, the database name is `course_reqs_db` and  the collection name is `courses`. This can be found (and renamed) in `subject_page_scraper.c`. 
 

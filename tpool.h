@@ -1,9 +1,6 @@
 #include <stdbool.h> 
 #include <pthread.h>
 
-#ifndef __TPOOL_H__
-#define __TPOOL_H__
-
 typedef void (*thread_func_t)(void *arg);
 
 typedef struct tpool_work {
@@ -32,5 +29,3 @@ tpool_work_t* tpool_work_create(thread_func_t func, void* arg);
 void tpool_work_destroy(tpool_work_t* work);
 tpool_work_t* tpool_work_get(tpool_t* tm);
 void* tpool_worker(void* arg);
-
-#endif
